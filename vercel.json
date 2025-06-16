@@ -31,6 +31,23 @@
       ]
     },
     {
+      "source": "/admin/config.yml",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "text/yaml; charset=utf-8"
+        },
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        }
+      ]
+    },
+    {
       "source": "/_data/(.*).yml",
       "headers": [
         {
