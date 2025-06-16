@@ -92,18 +92,30 @@ collections:
     fields:
       - { label: "Title", name: "title", widget: "string" }
       - { label: "Description", name: "description", widget: "text" }
-      - { label: "Image", name: "image", widget: "image", required: false }
+      - { label: "Image", name: "image", widget: "string" }
+      - {
+          label: "Button Text",
+          name: "button_text",
+          widget: "string",
+          default: "Get Quote",
+        }
+      - {
+          label: "Button Link",
+          name: "button_link",
+          widget: "string",
+          default: "#contact",
+        }
       - {
           label: "Featured",
           name: "featured",
           widget: "boolean",
           default: false,
         }
+      - { label: "Order", name: "order", widget: "number", default: 1 }
       - label: "Features"
         name: "features"
         widget: "list"
         field: { label: "Feature", name: "feature", widget: "string" }
-      - { label: "Order", name: "order", widget: "number", default: 1 }
 
   # Projects Section
   - name: "projects_section"
@@ -129,15 +141,9 @@ collections:
     fields:
       - { label: "Title", name: "title", widget: "string" }
       - { label: "Description", name: "description", widget: "text" }
-      - { label: "Image", name: "image", widget: "image", required: false }
+      - { label: "Image", name: "image", widget: "string" }
+      - { label: "Order", name: "order", widget: "number", default: 1 }
       - label: "Tags"
         name: "tags"
         widget: "list"
         field: { label: "Tag", name: "tag", widget: "string" }
-      - {
-          label: "Featured",
-          name: "featured",
-          widget: "boolean",
-          default: false,
-        }
-      - { label: "Order", name: "order", widget: "number", default: 1 }
