@@ -7,29 +7,45 @@ media_folder: "images"
 public_folder: "/images"
 
 collections:
-  - name: "pages"
-    label: "Pages"
+  - name: "site_config"
+    label: "Site Configuration"
     files:
-      - label: "Homepage Content"
-        name: "homepage"
-        file: "content/homepage.md"
+      - label: "Site Settings"
+        name: "site"
+        file: "_data/site.yml"
         fields:
-          - {
-              label: "Title",
-              name: "title",
-              widget: "string",
-              default: "Roots Power",
-            }
+          - { label: "Site Title", name: "title", widget: "string" }
+          - { label: "Phone", name: "phone", widget: "string" }
+          - { label: "Email", name: "email", widget: "string" }
+          - { label: "License", name: "license", widget: "string" }
+
+  - name: "hero"
+    label: "Hero Section"
+    files:
+      - label: "Hero Content"
+        name: "hero"
+        file: "_data/hero.yml"
+        fields:
+          - { label: "Badge Text", name: "badge", widget: "string" }
+          - { label: "Main Title", name: "title", widget: "string" }
           - { label: "Description", name: "description", widget: "text" }
           - {
-              label: "Phone",
-              name: "phone",
+              label: "Primary Button Text",
+              name: "primary_button_text",
               widget: "string",
-              default: "(707) 441-9436",
             }
           - {
-              label: "Email",
-              name: "email",
+              label: "Secondary Button Text",
+              name: "secondary_button_text",
               widget: "string",
-              default: "rj@rootspower.com",
             }
+
+  - name: "services_section"
+    label: "Services Section"
+    files:
+      - label: "Services Section"
+        name: "services_section"
+        file: "_data/services-section.yml"
+        fields:
+          - { label: "Title", name: "title", widget: "string" }
+          - { label: "Description", name: "description", widget: "text" }
