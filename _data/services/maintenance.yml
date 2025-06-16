@@ -1,17 +1,18 @@
-title: "Electrical Maintenance & Inspections"
-description: "Preventive maintenance and safety inspections to keep your electrical systems running safely and efficiently. Regular maintenance prevents costly repairs and ensures code compliance."
-image: "./service images/maintenance service.jpg"
-button_text: "Schedule Inspection"
+title: Electrical Maintenance & Inspections
+description: Preventive maintenance and safety inspections to keep your
+  electrical systems running safely and efficiently. Regular maintenance
+  prevents costly repairs and ensures code compliance.
+image: /images/uploads/image.jpg
+button_text: Schedule Inspection
 button_link: "#contact"
 featured: false
 order: 8
-
 features:
-  - "Preventive Maintenance Programs"
-  - "Electrical Safety Inspections"
-  - "Code Compliance Checks"
-  - "Panel Maintenance"
-  - "Circuit Testing"
-  - "Thermal Imaging"
-  - "Load Analysis"
-  - "Maintenance Contracts"
+  - Preventive Maintenance Programs
+  - Electrical Safety Inspections
+  - Code Compliance Checks
+  - Panel Maintenance
+  - Circuit Testing
+  - Thermal Imaging
+  - Load Analysis
+  - Maintenance Contracts
