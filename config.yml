@@ -1,5 +1,6 @@
 backend:
-  name: git-gateway
+  name: github
+  repo: timothyjjcrow/roots-power-cms
   branch: main # Branch to update (optional; defaults to master)
 
 # Uncomment below to enable drafts
