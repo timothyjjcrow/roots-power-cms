@@ -4,53 +4,28 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Roots Power CMS</title>
-    <meta name="cache-control" content="no-cache, no-store, must-revalidate" />
-    <meta name="pragma" content="no-cache" />
-    <meta name="expires" content="0" />
+    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
   </head>
   <body>
-    <!-- Clear all possible cache entries -->
+    <!-- Include the script that builds the page and powers Decap CMS -->
+    <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+
     <script>
-      // Clear all localStorage entries that might contain old auth data
-      if (window.localStorage) {
-        const keys = Object.keys(localStorage);
-        keys.forEach((key) => {
-          if (
-            key.includes("netlify") ||
-            key.includes("cms") ||
-            key.includes("auth")
-          ) {
-            localStorage.removeItem(key);
+      // Configure Decap CMS for your site
+      if (window.netlifyIdentity) {
+        window.netlifyIdentity.on("init", (user) => {
+          if (!user) {
+            window.netlifyIdentity.on("login", () => {
+              document.location.href = "/admin/";
+            });
           }
         });
       }
 
-      // Clear sessionStorage too
-      if (window.sessionStorage) {
-        const keys = Object.keys(sessionStorage);
-        keys.forEach((key) => {
-          if (
-            key.includes("netlify") ||
-            key.includes("cms") ||
-            key.includes("auth")
-          ) {
-            sessionStorage.removeItem(key);
-          }
-        });
+      // Initialize Netlify Identity
+      if (window.netlifyIdentity) {
+        window.netlifyIdentity.init();
       }
-    </script>
-
-    <!-- Include the script that builds the page and powers Decap CMS with cache buster -->
-    <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js?v=2024061611"></script>
-
-    <!-- Force reload config -->
-    <script>
-      // Ensure we're using the latest config
-      window.addEventListener("load", function () {
-        // Force reload of config.yml with cache buster
-        const configUrl = "/config.yml?v=" + Date.now();
-        console.log("Loading fresh config from:", configUrl);
-      });
     </script>
   </body>
 </html>
