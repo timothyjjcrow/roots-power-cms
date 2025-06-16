@@ -96,7 +96,7 @@ collections:
               - { label: "Icon", name: "icon", widget: "string" }
               - { label: "Text", name: "text", widget: "string" }
 
-  # Services - Individual Files
+  # Services - All Individual Files
   - name: "services"
     label: "Services"
     files:
@@ -106,7 +106,7 @@ collections:
         fields:
           - { label: "Title", name: "title", widget: "string" }
           - { label: "Description", name: "description", widget: "text" }
-          - { label: "Image", name: "image", widget: "string" }
+          - { label: "Image", name: "image", widget: "image" }
           - { label: "Button Text", name: "button_text", widget: "string" }
           - { label: "Button Link", name: "button_link", widget: "string" }
           - { label: "Featured", name: "featured", widget: "boolean" }
@@ -121,7 +121,7 @@ collections:
         fields:
           - { label: "Title", name: "title", widget: "string" }
           - { label: "Description", name: "description", widget: "text" }
-          - { label: "Image", name: "image", widget: "string" }
+          - { label: "Image", name: "image", widget: "image" }
           - { label: "Button Text", name: "button_text", widget: "string" }
           - { label: "Button Link", name: "button_link", widget: "string" }
           - { label: "Featured", name: "featured", widget: "boolean" }
@@ -136,7 +136,112 @@ collections:
         fields:
           - { label: "Title", name: "title", widget: "string" }
           - { label: "Description", name: "description", widget: "text" }
-          - { label: "Image", name: "image", widget: "string" }
+          - { label: "Image", name: "image", widget: "image" }
+          - { label: "Button Text", name: "button_text", widget: "string" }
+          - { label: "Button Link", name: "button_link", widget: "string" }
+          - { label: "Featured", name: "featured", widget: "boolean" }
+          - { label: "Order", name: "order", widget: "number" }
+          - label: "Features"
+            name: "features"
+            widget: "list"
+            field: { label: "Feature", name: "feature", widget: "string" }
+      - label: "Generator Services"
+        name: "generator"
+        file: "_data/services/generator.yml"
+        fields:
+          - { label: "Title", name: "title", widget: "string" }
+          - { label: "Description", name: "description", widget: "text" }
+          - { label: "Image", name: "image", widget: "image" }
+          - { label: "Button Text", name: "button_text", widget: "string" }
+          - { label: "Button Link", name: "button_link", widget: "string" }
+          - { label: "Featured", name: "featured", widget: "boolean" }
+          - { label: "Order", name: "order", widget: "number" }
+          - label: "Features"
+            name: "features"
+            widget: "list"
+            field: { label: "Feature", name: "feature", widget: "string" }
+      - label: "Emergency Services"
+        name: "emergency"
+        file: "_data/services/emergency.yml"
+        fields:
+          - { label: "Title", name: "title", widget: "string" }
+          - { label: "Description", name: "description", widget: "text" }
+          - { label: "Image", name: "image", widget: "image" }
+          - { label: "Button Text", name: "button_text", widget: "string" }
+          - { label: "Button Link", name: "button_link", widget: "string" }
+          - { label: "Featured", name: "featured", widget: "boolean" }
+          - { label: "Order", name: "order", widget: "number" }
+          - label: "Features"
+            name: "features"
+            widget: "list"
+            field: { label: "Feature", name: "feature", widget: "string" }
+      - label: "Industrial Services"
+        name: "industrial"
+        file: "_data/services/industrial.yml"
+        fields:
+          - { label: "Title", name: "title", widget: "string" }
+          - { label: "Description", name: "description", widget: "text" }
+          - { label: "Image", name: "image", widget: "image" }
+          - { label: "Button Text", name: "button_text", widget: "string" }
+          - { label: "Button Link", name: "button_link", widget: "string" }
+          - { label: "Featured", name: "featured", widget: "boolean" }
+          - { label: "Order", name: "order", widget: "number" }
+          - label: "Features"
+            name: "features"
+            widget: "list"
+            field: { label: "Feature", name: "feature", widget: "string" }
+      - label: "Lighting Services"
+        name: "lighting"
+        file: "_data/services/lighting.yml"
+        fields:
+          - { label: "Title", name: "title", widget: "string" }
+          - { label: "Description", name: "description", widget: "text" }
+          - { label: "Image", name: "image", widget: "image" }
+          - { label: "Button Text", name: "button_text", widget: "string" }
+          - { label: "Button Link", name: "button_link", widget: "string" }
+          - { label: "Featured", name: "featured", widget: "boolean" }
+          - { label: "Order", name: "order", widget: "number" }
+          - label: "Features"
+            name: "features"
+            widget: "list"
+            field: { label: "Feature", name: "feature", widget: "string" }
+      - label: "Maintenance Services"
+        name: "maintenance"
+        file: "_data/services/maintenance.yml"
+        fields:
+          - { label: "Title", name: "title", widget: "string" }
+          - { label: "Description", name: "description", widget: "text" }
+          - { label: "Image", name: "image", widget: "image" }
+          - { label: "Button Text", name: "button_text", widget: "string" }
+          - { label: "Button Link", name: "button_link", widget: "string" }
+          - { label: "Featured", name: "featured", widget: "boolean" }
+          - { label: "Order", name: "order", widget: "number" }
+          - label: "Features"
+            name: "features"
+            widget: "list"
+            field: { label: "Feature", name: "feature", widget: "string" }
+      - label: "Smart Home Services"
+        name: "smart_home"
+        file: "_data/services/smart-home.yml"
+        fields:
+          - { label: "Title", name: "title", widget: "string" }
+          - { label: "Description", name: "description", widget: "text" }
+          - { label: "Image", name: "image", widget: "image" }
+          - { label: "Button Text", name: "button_text", widget: "string" }
+          - { label: "Button Link", name: "button_link", widget: "string" }
+          - { label: "Featured", name: "featured", widget: "boolean" }
+          - { label: "Order", name: "order", widget: "number" }
+          - label: "Features"
+            name: "features"
+            widget: "list"
+            field: { label: "Feature", name: "feature", widget: "string" }
+      - label: "Underground Services"
+        name: "underground"
+        file: "_data/services/underground.yml"
+        fields:
+          - { label: "Title", name: "title", widget: "string" }
+          - { label: "Description", name: "description", widget: "text" }
+          - { label: "Image", name: "image", widget: "image" }
           - { label: "Button Text", name: "button_text", widget: "string" }
           - { label: "Button Link", name: "button_link", widget: "string" }
           - { label: "Featured", name: "featured", widget: "boolean" }
@@ -156,7 +261,7 @@ collections:
         fields:
           - { label: "Title", name: "title", widget: "string" }
           - { label: "Description", name: "description", widget: "text" }
-          - { label: "Image", name: "image", widget: "string" }
+          - { label: "Image", name: "image", widget: "image" }
           - { label: "Order", name: "order", widget: "number" }
           - label: "Tags"
             name: "tags"
@@ -168,7 +273,7 @@ collections:
         fields:
           - { label: "Title", name: "title", widget: "string" }
           - { label: "Description", name: "description", widget: "text" }
-          - { label: "Image", name: "image", widget: "string" }
+          - { label: "Image", name: "image", widget: "image" }
           - { label: "Order", name: "order", widget: "number" }
           - label: "Tags"
             name: "tags"
@@ -180,7 +285,7 @@ collections:
         fields:
           - { label: "Title", name: "title", widget: "string" }
           - { label: "Description", name: "description", widget: "text" }
-          - { label: "Image", name: "image", widget: "string" }
+          - { label: "Image", name: "image", widget: "image" }
           - { label: "Order", name: "order", widget: "number" }
           - label: "Tags"
             name: "tags"
