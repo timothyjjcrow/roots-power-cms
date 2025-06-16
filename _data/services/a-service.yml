@@ -1,0 +1,17 @@
+title: "A Service"
+description: "This is a test service description."
+image: "/images/uploads/image.jpg"
+button_text: "Get Quote"
+button_link: "#contact"
+featured: false
+order: 11
+
+features:
+  - "Feature 1"
+  - "Feature 2"
+  - "Feature 3"
+  - "Feature 4"
+  - "Feature 5"
+  - "Feature 6"
+  - "Feature 7"
+  - "Feature 8"

@@ -103,6 +103,8 @@ collections:
     create: true
     delete: true
     slug: "{{slug}}"
+    extension: "yml"
+    format: "yml"
     fields:
       - { label: "Title", name: "title", widget: "string" }
       - { label: "Description", name: "description", widget: "text" }
@@ -128,6 +130,8 @@ collections:
     create: true
     delete: true
     slug: "{{slug}}"
+    extension: "yml"
+    format: "yml"
     fields:
       - { label: "Title", name: "title", widget: "string" }
       - { label: "Description", name: "description", widget: "text" }
