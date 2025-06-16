@@ -8,9 +8,10 @@
   to = "/admin/index.html"
   status = 200
 
-# Enable Git Gateway for Decap CMS
-[context.production]
-  environment = { GIT_LFS_ENABLED = "true" }
+# Production environment configuration
+[context.production.environment]
+  GIT_LFS_ENABLED = "true"
+  NETLIFY_USE_EDGE_FUNCTIONS = "true"
 
 # Headers for security and proper CMS functioning
 [[headers]]
@@ -33,10 +34,6 @@
   [headers.values]
     Content-Type = "text/yaml; charset=utf-8"
     Access-Control-Allow-Origin = "*"
-
-# Enable Netlify Identity
-[context.production.environment]
-  NETLIFY_USE_EDGE_FUNCTIONS = "true"
 
 [build.environment]
   NODE_VERSION = "18"
