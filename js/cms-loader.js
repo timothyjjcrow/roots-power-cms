@@ -26,9 +26,8 @@ class CMSLoader {
 
   // Load all YAML files from a directory dynamically
   async loadAllFilesFromDirectory(directoryPath, targetArray) {
-    // Since we can't list directory contents directly in the browser,
-    // we'll try to load files based on common patterns and existing files
-    const commonServiceFiles = [
+    // Try to load all known files first, then attempt to discover new ones
+    const knownServiceFiles = [
       "residential.yml",
       "commercial.yml",
       "solar.yml",
@@ -42,87 +41,99 @@ class CMSLoader {
       "a.yml",
     ];
 
-    const commonProjectFiles = [
+    const knownProjectFiles = [
       "coastal-commercial.yml",
       "residential-upgrade.yml",
       "solar-installation.yml",
-      "commercial-lighting.yml",
-      "industrial-upgrade.yml",
-      "emergency-repair.yml",
     ];
 
-    let filesToTry = [];
+    let knownFiles = [];
     if (directoryPath.includes("services")) {
-      filesToTry = commonServiceFiles;
+      knownFiles = knownServiceFiles;
     } else if (directoryPath.includes("projects")) {
-      filesToTry = commonProjectFiles;
+      knownFiles = knownProjectFiles;
     }
 
-    // Try to load each potential file
-    for (const file of filesToTry) {
+    // Load all known files
+    for (const file of knownFiles) {
       try {
         const data = await this.loadYAML(`${directoryPath}${file}`);
         if (data) {
           targetArray.push(data);
         }
       } catch (error) {
-        // File doesn't exist, which is fine - just skip it
-        console.debug(`File ${file} not found, skipping`);
+        console.debug(`Known file ${file} not found, skipping`);
       }
     }
 
-    // Also try to load any files that might be created by the CMS with different names
-    // Try common patterns that CMS might use for new files
-    const additionalPatterns = [
+    // Try to discover additional files by attempting common patterns and single letters
+    const discoveryPatterns = [];
+
+    // Single letter files (a.yml, b.yml, etc.)
+    for (let i = 97; i <= 122; i++) {
+      discoveryPatterns.push(String.fromCharCode(i) + ".yml");
+    }
+
+    // Common CMS patterns
+    discoveryPatterns.push(
       "new-service.yml",
       "service.yml",
       "test-service.yml",
       "custom-service.yml",
-    ];
+      "new-project.yml",
+      "project.yml",
+      "test-project.yml",
+      "custom-project.yml"
+    );
 
-    if (directoryPath.includes("services")) {
-      // Try additional service patterns
-      for (const pattern of additionalPatterns) {
+    // Try each discovery pattern
+    for (const pattern of discoveryPatterns) {
+      if (!knownFiles.includes(pattern)) {
         try {
           const data = await this.loadYAML(`${directoryPath}${pattern}`);
-          if (data && !filesToTry.includes(pattern)) {
+          if (data) {
             targetArray.push(data);
+            console.log(`Discovered new file: ${pattern}`);
           }
         } catch (error) {
-          console.debug(`Pattern ${pattern} not found, skipping`);
+          // File doesn't exist, which is fine
         }
       }
     }
 
-    // Try to load any files that might be created by the CMS with different names
-    // We'll use a more robust approach by trying to fetch a directory listing
+    // Also try to parse directory listing if available
     try {
       const response = await fetch(directoryPath);
       if (response.ok) {
         const text = await response.text();
-        // Try to extract .yml file names from directory listing HTML
         const ymlMatches = text.match(/href="([^"]*\.yml)"/g);
         if (ymlMatches) {
           for (const match of ymlMatches) {
             const filename = match.match(/href="([^"]*)"/)[1];
             if (
-              !filesToTry.includes(filename) &&
-              !additionalPatterns.includes(filename)
+              !knownFiles.includes(filename) &&
+              !discoveryPatterns.includes(filename)
             ) {
               try {
                 const data = await this.loadYAML(`${directoryPath}${filename}`);
                 if (data) {
                   targetArray.push(data);
+                  console.log(
+                    `Discovered file from directory listing: ${filename}`
+                  );
                 }
               } catch (error) {
-                console.debug(`Could not load ${filename}:`, error);
+                console.debug(
+                  `Could not load discovered file ${filename}:`,
+                  error
+                );
               }
             }
           }
         }
       }
     } catch (error) {
-      console.debug("Could not list directory contents:", error);
+      console.debug("Could not access directory listing:", error);
     }
   }
 
