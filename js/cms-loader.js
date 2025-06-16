@@ -24,117 +24,97 @@ class CMSLoader {
     }
   }
 
-  // Load all YAML files from a directory dynamically
+  // Load all YAML files from a directory using registry for efficiency
   async loadAllFilesFromDirectory(directoryPath, targetArray) {
-    // Try to load all known files first, then attempt to discover new ones
-    const knownServiceFiles = [
-      "residential.yml",
-      "commercial.yml",
-      "solar.yml",
-      "underground.yml",
-      "generator.yml",
-      "emergency.yml",
-      "industrial.yml",
-      "maintenance.yml",
-      "lighting.yml",
-      "smart-home.yml",
-      "a.yml",
-    ];
-
-    const knownProjectFiles = [
-      "coastal-commercial.yml",
-      "residential-upgrade.yml",
-      "solar-installation.yml",
-    ];
-
-    let knownFiles = [];
+    let registryFile = "";
     if (directoryPath.includes("services")) {
-      knownFiles = knownServiceFiles;
+      registryFile = "/_data/services-registry.yml";
     } else if (directoryPath.includes("projects")) {
-      knownFiles = knownProjectFiles;
+      registryFile = "/_data/projects-registry.yml";
     }
 
-    // Load all known files
-    for (const file of knownFiles) {
+    // Try to load from registry first (fast approach)
+    if (registryFile) {
       try {
-        const data = await this.loadYAML(`${directoryPath}${file}`);
-        if (data) {
-          targetArray.push(data);
-        }
-      } catch (error) {
-        console.debug(`Known file ${file} not found, skipping`);
-      }
-    }
+        const registry = await this.loadYAML(registryFile);
+        if (registry) {
+          const fileList = directoryPath.includes("services")
+            ? registry.services
+            : registry.projects;
+          if (fileList && Array.isArray(fileList)) {
+            console.log(`Loading ${fileList.length} files from registry`);
 
-    // Try to discover additional files by attempting common patterns and single letters
-    const discoveryPatterns = [];
-
-    // Single letter files (a.yml, b.yml, etc.)
-    for (let i = 97; i <= 122; i++) {
-      discoveryPatterns.push(String.fromCharCode(i) + ".yml");
-    }
-
-    // Common CMS patterns
-    discoveryPatterns.push(
-      "new-service.yml",
-      "service.yml",
-      "test-service.yml",
-      "custom-service.yml",
-      "new-project.yml",
-      "project.yml",
-      "test-project.yml",
-      "custom-project.yml"
-    );
-
-    // Try each discovery pattern
-    for (const pattern of discoveryPatterns) {
-      if (!knownFiles.includes(pattern)) {
-        try {
-          const data = await this.loadYAML(`${directoryPath}${pattern}`);
-          if (data) {
-            targetArray.push(data);
-            console.log(`Discovered new file: ${pattern}`);
-          }
-        } catch (error) {
-          // File doesn't exist, which is fine
-        }
-      }
-    }
-
-    // Also try to parse directory listing if available
-    try {
-      const response = await fetch(directoryPath);
-      if (response.ok) {
-        const text = await response.text();
-        const ymlMatches = text.match(/href="([^"]*\.yml)"/g);
-        if (ymlMatches) {
-          for (const match of ymlMatches) {
-            const filename = match.match(/href="([^"]*)"/)[1];
-            if (
-              !knownFiles.includes(filename) &&
-              !discoveryPatterns.includes(filename)
-            ) {
+            // Load all files in parallel for maximum speed
+            const loadPromises = fileList.map(async (filename) => {
               try {
                 const data = await this.loadYAML(`${directoryPath}${filename}`);
                 if (data) {
-                  targetArray.push(data);
-                  console.log(
-                    `Discovered file from directory listing: ${filename}`
-                  );
+                  return data;
                 }
               } catch (error) {
-                console.debug(
-                  `Could not load discovered file ${filename}:`,
-                  error
-                );
+                console.debug(`Could not load ${filename}:`, error);
               }
-            }
+              return null;
+            });
+
+            const results = await Promise.all(loadPromises);
+            results.forEach((data) => {
+              if (data) {
+                targetArray.push(data);
+              }
+            });
+
+            return; // Exit early if registry worked
           }
         }
+      } catch (error) {
+        console.debug(
+          "Registry not available, falling back to discovery:",
+          error
+        );
       }
-    } catch (error) {
-      console.debug("Could not access directory listing:", error);
     }
+
+    // Fallback: Load known files only (no slow discovery)
+    const fallbackFiles = directoryPath.includes("services")
+      ? [
+          "residential.yml",
+          "commercial.yml",
+          "solar.yml",
+          "underground.yml",
+          "generator.yml",
+          "emergency.yml",
+          "industrial.yml",
+          "maintenance.yml",
+          "lighting.yml",
+          "smart-home.yml",
+          "a.yml",
+        ]
+      : [
+          "coastal-commercial.yml",
+          "residential-upgrade.yml",
+          "solar-installation.yml",
+        ];
+
+    console.log("Using fallback file loading");
+    const loadPromises = fallbackFiles.map(async (filename) => {
+      try {
+        const data = await this.loadYAML(`${directoryPath}${filename}`);
+        if (data) {
+          return data;
+        }
+      } catch (error) {
+        console.debug(`Fallback: Could not load ${filename}:`, error);
+      }
+      return null;
+    });
+
+    const results = await Promise.all(loadPromises);
+    results.forEach((data) => {
+      if (data) {
+        targetArray.push(data);
+      }
+    });
   }
 
   // Simple YAML parser for our basic structure
