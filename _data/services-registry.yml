@@ -1,5 +1,4 @@
 services:
-  - a.yml
   - commercial.yml
   - emergency.yml
   - generator.yml
