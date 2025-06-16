@@ -1,0 +1,581 @@
+backend:
+  name: github
+  repo: timothyjjcrow/roots-power-cms
+  branch: main # Branch to update (optional; defaults to master)
+
+# Uncomment below to enable drafts
+# publish_mode: editorial_workflow
+
+media_folder: "images/uploads" # Media files will be stored in the repo under images/uploads
+public_folder: "/images/uploads" # The src attribute for uploaded media will begin with /images/uploads
+
+# Site URL (update with your actual Vercel URL)
+site_url: https://roots-power-cms.vercel.app
+display_url: https://roots-power-cms.vercel.app
+
+# Logo for the CMS interface
+logo_url: /logo/RootsPowerColorStacked_BLK_SM_HQ.jpg
+
+collections:
+  # Site Configuration
+  - name: "config"
+    label: "Site Configuration"
+    files:
+      - label: "Site Settings"
+        name: "site"
+        file: "_data/site.yml"
+        fields:
+          - {
+              label: "Site Title",
+              name: "title",
+              widget: "string",
+              default: "Roots Power - Expert Electrical Solutions",
+            }
+          - {
+              label: "Site Description",
+              name: "description",
+              widget: "text",
+              default: "Professional electrical services for residential and commercial projects in Eureka, CA.",
+            }
+          - {
+              label: "Site URL",
+              name: "url",
+              widget: "string",
+              default: "https://roots-power.vercel.app",
+            }
+          - {
+              label: "Phone Number",
+              name: "phone",
+              widget: "string",
+              default: "(707) 441-9436",
+            }
+          - {
+              label: "Email",
+              name: "email",
+              widget: "string",
+              default: "rj@rootspower.com",
+            }
+          - {
+              label: "License Number",
+              name: "license",
+              widget: "string",
+              default: "CSLB Lic.# 901433",
+            }
+          - label: "Address"
+            name: "address"
+            widget: "object"
+            fields:
+              - {
+                  label: "Street",
+                  name: "street",
+                  widget: "string",
+                  default: "1453 Gibson Dr.",
+                }
+              - {
+                  label: "City",
+                  name: "city",
+                  widget: "string",
+                  default: "Eureka",
+                }
+              - {
+                  label: "State",
+                  name: "state",
+                  widget: "string",
+                  default: "CA",
+                }
+              - {
+                  label: "Zip Code",
+                  name: "zip",
+                  widget: "string",
+                  default: "95503",
+                }
+          - label: "Social Media"
+            name: "social"
+            widget: "object"
+            fields:
+              - {
+                  label: "Facebook",
+                  name: "facebook",
+                  widget: "string",
+                  required: false,
+                }
+              - {
+                  label: "Instagram",
+                  name: "instagram",
+                  widget: "string",
+                  required: false,
+                }
+              - {
+                  label: "LinkedIn",
+                  name: "linkedin",
+                  widget: "string",
+                  required: false,
+                }
+              - {
+                  label: "Twitter",
+                  name: "twitter",
+                  widget: "string",
+                  required: false,
+                }
+
+  # Hero Section
+  - name: "hero"
+    label: "Hero Section"
+    files:
+      - label: "Hero Content"
+        name: "hero"
+        file: "_data/hero.yml"
+        fields:
+          - {
+              label: "Badge Text",
+              name: "badge",
+              widget: "string",
+              default: "Licensed & Insured • CSLB Lic.# 901433",
+            }
+          - {
+              label: "Main Title",
+              name: "title",
+              widget: "string",
+              default: "Roots Power Expert Electrical Solutions",
+            }
+          - {
+              label: "Description",
+              name: "description",
+              widget: "text",
+              default: "Professional electrical services for residential and commercial projects in the greater Eureka area. Led by RJ Satava with 20+ years of experience and teaching expertise at College of the Redwoods.",
+            }
+          - {
+              label: "Primary Button Text",
+              name: "primary_button_text",
+              widget: "string",
+              default: "Schedule Consultation",
+            }
+          - {
+              label: "Primary Button Link",
+              name: "primary_button_link",
+              widget: "string",
+              default: "#contact",
+            }
+          - {
+              label: "Secondary Button Text",
+              name: "secondary_button_text",
+              widget: "string",
+              default: "(707) 441-9436",
+            }
+          - {
+              label: "Secondary Button Link",
+              name: "secondary_button_link",
+              widget: "string",
+              default: "tel:7074419436",
+            }
+          - label: "Features"
+            name: "features"
+            widget: "list"
+            fields:
+              - {
+                  label: "Icon",
+                  name: "icon",
+                  widget: "string",
+                  hint: "Font Awesome icon class (e.g., fas fa-certificate)",
+                }
+              - { label: "Text", name: "text", widget: "string" }
+            default:
+              - { icon: "fas fa-certificate", text: "Licensed & Bonded" }
+              - { icon: "fas fa-clock", text: "24/7 Emergency" }
+              - { icon: "fas fa-star", text: "20+ Years Experience" }
+
+  # Services Section
+  - name: "services_section"
+    label: "Services Section"
+    files:
+      - label: "Services Section Content"
+        name: "services_section"
+        file: "_data/services-section.yml"
+        fields:
+          - {
+              label: "Section Title",
+              name: "title",
+              widget: "string",
+              default: "Services",
+            }
+          - {
+              label: "Section Description",
+              name: "description",
+              widget: "string",
+              default: "Providing Everything You Need",
+            }
+
+  # Services
+  - name: "services"
+    label: "Services"
+    folder: "_data/services"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Service Name", name: "title", widget: "string" }
+      - { label: "Service Description", name: "description", widget: "text" }
+      - { label: "Service Image", name: "image", widget: "image" }
+      - {
+          label: "Button Text",
+          name: "button_text",
+          widget: "string",
+          default: "Get Quote",
+        }
+      - {
+          label: "Button Link",
+          name: "button_link",
+          widget: "string",
+          default: "#contact",
+        }
+      - {
+          label: "Featured Service",
+          name: "featured",
+          widget: "boolean",
+          default: false,
+        }
+      - { label: "Display Order", name: "order", widget: "number", default: 1 }
+      - label: "Service Features"
+        name: "features"
+        widget: "list"
+        field: { label: "Feature", name: "feature", widget: "string" }
+
+  # About Section
+  - name: "about"
+    label: "About Section"
+    files:
+      - label: "About Content"
+        name: "about"
+        file: "_data/about.yml"
+        fields:
+          - {
+              label: "Section Title",
+              name: "title",
+              widget: "string",
+              default: "The Full Story",
+            }
+          - {
+              label: "Section Subtitle",
+              name: "subtitle",
+              widget: "string",
+              default: "Excellence in Electrical Services Since 2004",
+            }
+          - label: "Paragraphs"
+            name: "paragraphs"
+            widget: "list"
+            field: { label: "Paragraph", name: "paragraph", widget: "text" }
+          - label: "Features"
+            name: "features"
+            widget: "list"
+            fields:
+              - {
+                  label: "Icon",
+                  name: "icon",
+                  widget: "string",
+                  hint: "Font Awesome icon class",
+                }
+              - { label: "Title", name: "title", widget: "string" }
+              - { label: "Description", name: "description", widget: "text" }
+
+  # Projects Section
+  - name: "projects_section"
+    label: "Projects Section"
+    files:
+      - label: "Projects Section Content"
+        name: "projects_section"
+        file: "_data/projects-section.yml"
+        fields:
+          - {
+              label: "Section Title",
+              name: "title",
+              widget: "string",
+              default: "Our Work",
+            }
+          - {
+              label: "Section Description",
+              name: "description",
+              widget: "text",
+              default: "Roots Power is extremely proud of the quality work they provide with every service they offer. Below you can browse a few of the projects we are currently working on or some of our projects that have been completed.",
+            }
+
+  # Projects
+  - name: "projects"
+    label: "Projects"
+    folder: "_data/projects"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Project Name", name: "title", widget: "string" }
+      - { label: "Project Description", name: "description", widget: "text" }
+      - { label: "Project Image", name: "image", widget: "image" }
+      - {
+          label: "Display Order",
+          name: "order",
+          widget: "number",
+          default: 1,
+          hint: "Lower numbers appear first",
+        }
+      - label: "Project Tags"
+        name: "tags"
+        widget: "list"
+        field: { label: "Tag", name: "tag", widget: "string" }
+        hint: "Add tags like 'Commercial', 'Residential', 'Solar', etc."
+
+  # Navigation
+  - name: "navigation"
+    label: "Navigation"
+    files:
+      - label: "Main Navigation"
+        name: "nav"
+        file: "_data/navigation.yml"
+        fields:
+          - label: "Navigation Links"
+            name: "links"
+            widget: "list"
+            fields:
+              - { label: "Text", name: "text", widget: "string" }
+              - { label: "URL", name: "url", widget: "string" }
+              - {
+                  label: "External Link",
+                  name: "external",
+                  widget: "boolean",
+                  default: false,
+                }
+
+  # Contact Information
+  - name: "contact"
+    label: "Contact Information"
+    files:
+      - label: "Contact Details"
+        name: "contact"
+        file: "_data/contact.yml"
+        fields:
+          - {
+              label: "Section Title",
+              name: "title",
+              widget: "string",
+              default: "Let's Work Together",
+            }
+          - {
+              label: "Section Subtitle",
+              name: "subtitle",
+              widget: "string",
+              default: "Interested in reaching out to us? We'd love to hear from you!",
+            }
+          - label: "Description Paragraphs"
+            name: "description"
+            widget: "list"
+            field: { label: "Paragraph", name: "paragraph", widget: "string" }
+          - label: "Contact Methods"
+            name: "methods"
+            widget: "list"
+            fields:
+              - {
+                  label: "Icon",
+                  name: "icon",
+                  widget: "string",
+                  hint: "Font Awesome icon class",
+                }
+              - { label: "Title", name: "title", widget: "string" }
+              - { label: "Value", name: "value", widget: "string" }
+              - {
+                  label: "Link",
+                  name: "link",
+                  widget: "string",
+                  required: false,
+                }
+
+  # Form Configuration
+  - name: "forms"
+    label: "Forms"
+    files:
+      - label: "Contact Form"
+        name: "contact_form"
+        file: "_data/contact_form.yml"
+        fields:
+          - label: "Service Options"
+            name: "service_options"
+            widget: "list"
+            fields:
+              - { label: "Option Text", name: "text", widget: "string" }
+              - { label: "Option Value", name: "value", widget: "string" }
+          - label: "Contact Method Options"
+            name: "contact_method_options"
+            widget: "list"
+            fields:
+              - { label: "Option Text", name: "text", widget: "string" }
+              - { label: "Option Value", name: "value", widget: "string" }
+
+  # Testimonials
+  - name: "testimonials"
+    label: "Testimonials"
+    folder: "_data/testimonials"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Client Name", name: "name", widget: "string" }
+      - {
+          label: "Client Title/Company",
+          name: "title",
+          widget: "string",
+          required: false,
+        }
+      - { label: "Testimonial Text", name: "testimonial", widget: "text" }
+      - {
+          label: "Rating",
+          name: "rating",
+          widget: "number",
+          min: 1,
+          max: 5,
+          default: 5,
+        }
+      - {
+          label: "Client Photo",
+          name: "photo",
+          widget: "image",
+          required: false,
+        }
+      - { label: "Display Order", name: "order", widget: "number", default: 1 }
+      - {
+          label: "Featured",
+          name: "featured",
+          widget: "boolean",
+          default: false,
+        }
+
+  # Blog Posts (if needed)
+  - name: "blog"
+    label: "Blog Posts"
+    folder: "_posts"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Publish Date", name: "date", widget: "datetime" }
+      - {
+          label: "Author",
+          name: "author",
+          widget: "string",
+          default: "RJ Satava",
+        }
+      - {
+          label: "Featured Image",
+          name: "featured_image",
+          widget: "image",
+          required: false,
+        }
+      - { label: "Excerpt", name: "excerpt", widget: "text", required: false }
+      - { label: "Tags", name: "tags", widget: "list", required: false }
+      - { label: "Body", name: "body", widget: "markdown" }
+
+  # SEO Settings
+  - name: "seo"
+    label: "SEO Settings"
+    files:
+      - label: "Meta Tags"
+        name: "meta"
+        file: "_data/seo.yml"
+        fields:
+          - { label: "Meta Title", name: "title", widget: "string" }
+          - {
+              label: "Meta Description",
+              name: "description",
+              widget: "text",
+              pattern: [".{50,160}", "Must be between 50-160 characters"],
+            }
+          - {
+              label: "Meta Keywords",
+              name: "keywords",
+              widget: "list",
+              required: false,
+            }
+          - {
+              label: "Open Graph Image",
+              name: "og_image",
+              widget: "image",
+              required: false,
+            }
+          - {
+              label: "Twitter Card Type",
+              name: "twitter_card",
+              widget: "select",
+              options: ["summary", "summary_large_image"],
+              default: "summary_large_image",
+            }
+          - {
+              label: "Google Analytics ID",
+              name: "google_analytics",
+              widget: "string",
+              required: false,
+            }
+          - {
+              label: "Google Tag Manager ID",
+              name: "google_tag_manager",
+              widget: "string",
+              required: false,
+            }
+
+  # Emergency Banner (optional)
+  - name: "emergency"
+    label: "Emergency Banner"
+    files:
+      - label: "Emergency Alert"
+        name: "emergency"
+        file: "_data/emergency.yml"
+        fields:
+          - {
+              label: "Show Emergency Banner",
+              name: "enabled",
+              widget: "boolean",
+              default: false,
+            }
+          - {
+              label: "Emergency Message",
+              name: "message",
+              widget: "string",
+              required: false,
+            }
+          - {
+              label: "Emergency Phone",
+              name: "phone",
+              widget: "string",
+              required: false,
+            }
+          - {
+              label: "Banner Color",
+              name: "color",
+              widget: "select",
+              options: ["red", "orange", "yellow", "blue"],
+              default: "red",
+              required: false,
+            }
+
+  # Footer Configuration
+  - name: "footer"
+    label: "Footer"
+    files:
+      - label: "Footer Content"
+        name: "footer"
+        file: "_data/footer.yml"
+        fields:
+          - { label: "Footer Description", name: "description", widget: "text" }
+          - {
+              label: "Copyright Text",
+              name: "copyright",
+              widget: "string",
+              default: "© 2025 Roots Power. All rights reserved.",
+            }
+          - label: "Footer Links"
+            name: "links"
+            widget: "list"
+            fields:
+              - { label: "Section Title", name: "title", widget: "string" }
+              - label: "Section Links"
+                name: "items"
+                widget: "list"
+                fields:
+                  - { label: "Text", name: "text", widget: "string" }
+                  - { label: "URL", name: "url", widget: "string" }
+
+# Editor settings
+editor:
+  preview: false
