@@ -1,0 +1,16 @@
+title: "Solar/Renewable Energy"
+description: "Harness the power of renewable energy with our comprehensive solar and alternative energy solutions. From design to installation to maintenance."
+image: "./service images/Solar:Renewable Energy.jpg"
+button_text: "Solar Quote"
+button_link: "#contact"
+featured: true
+order: 5
+
+features:
+  - "Solar PV Systems"
+  - "Grid Connected (On Grid) Systems"
+  - "Stand Alone (Off Grid) Systems"
+  - "Water Pumping Systems"
+  - "Battery Backup Systems"
+  - "Hydroelectric Systems"
+  - "Wind Turbine Systems"

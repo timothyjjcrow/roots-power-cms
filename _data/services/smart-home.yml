@@ -1,0 +1,19 @@
+title: "Smart Home Electrical Systems"
+description: "Modern smart home electrical installations and automation systems. Transform your home with intelligent electrical solutions for convenience, security, and energy efficiency."
+image: "./service images/smart-home service.jpg"
+button_text: "Smart Home Quote"
+button_link: "#contact"
+featured: false
+order: 10
+
+features:
+  - "Home Automation Systems"
+  - "Smart Panel Upgrades"
+  - "Smart Switches & Outlets"
+  - "Whole Home Surge Protection"
+  - "EV Charging Stations"
+  - "Smart Lighting Controls"
+  - "Security System Wiring"
+  - "Network & Data Cabling"
+  - "Smart Thermostat Installation"
+  - "Home Energy Management"

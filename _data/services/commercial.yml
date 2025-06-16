@@ -1,0 +1,27 @@
+title: "Commercial Installations"
+description: "We offer all the same services to our Commercial customers as offered to our Residential customers, plus those services that are unique to your particular business."
+image: "./service images/commercial service.jpg"
+button_text: "Commercial Quote"
+button_link: "#contact"
+featured: false
+order: 2
+
+features:
+  - "New Construction"
+  - "Remodel / Repair"
+  - "Troubleshooting"
+  - "Service Upgrades"
+  - "Lighting Design & Installation"
+  - "Emergency & Exit Lighting"
+  - "Fire Alarm Systems"
+  - "Security Systems"
+  - "Data/Network Cabling"
+  - "Motor Controls"
+  - "Load Analysis & Power Quality"
+  - "Electrical Maintenance Programs"
+  - "Retailers"
+  - "Restaurants"
+  - "Institutions - Schools / Government"
+  - "Cannabis Industry"
+  - "Solar / Renewable Energy Installations"
+  - "Generator / Backup Battery Installations"

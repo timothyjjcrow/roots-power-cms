@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CMS Deployment Test</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .test-section {
+        margin: 20px 0;
+        padding: 15px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+      }
+      .success {
+        background: #d4edda;
+        border-color: #c3e6cb;
+        color: #155724;
+      }
+      .error {
+        background: #f8d7da;
+        border-color: #f5c6cb;
+        color: #721c24;
+      }
+      .warning {
+        background: #fff3cd;
+        border-color: #ffeaa7;
+        color: #856404;
+      }
+      .info {
+        background: #d1ecf1;
+        border-color: #bee5eb;
+        color: #0c5460;
+      }
+      pre {
+        background: #f8f9fa;
+        padding: 10px;
+        border-radius: 3px;
+        overflow-x: auto;
+        font-size: 12px;
+      }
+      .test-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+      }
+      .status {
+        font-weight: bold;
+      }
+      button {
+        background: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        margin: 5px;
+      }
+      button:hover {
+        background: #0056b3;
+      }
+      .checklist {
+        list-style-type: none;
+        padding: 0;
+      }
+      .checklist li {
+        padding: 5px 0;
+      }
+      .checklist li:before {
+        content: "☐ ";
+        margin-right: 10px;
+      }
+      .checklist li.checked:before {
+        content: "✅ ";
+      }
+    </style>
+  </head>
+  <body>
+    <h1>🚀 Roots Power CMS Deployment Test</h1>
+    <p>
+      This page tests all CMS functionality and provides a deployment checklist.
+    </p>
+
+    <div class="test-section info">
+      <h3>📋 Deployment Checklist</h3>
+      <ul class="checklist">
+        <li id="check-files">All files committed to GitHub</li>
+        <li id="check-netlify">Site deployed to Netlify</li>
+        <li id="check-identity">Netlify Identity enabled</li>
+        <li id="check-gateway">Git Gateway enabled</li>
+        <li id="check-users">CMS users invited</li>
+        <li id="check-admin">Admin interface accessible</li>
+        <li id="check-content">Content loading properly</li>
+        <li id="check-editing">Content editing works</li>
+      </ul>
+      <button onclick="checkDeployment()">Run Deployment Check</button>
+    </div>
+
+    <div class="test-grid">
+      <div class="test-section" id="content-test">
+        <h3>📄 Content Loading Test</h3>
+        <p>
+          Status: <span id="content-status" class="status">Testing...</span>
+        </p>
+        <div id="content-results"></div>
+        <button onclick="testContentLoading()">Test Content Loading</button>
+      </div>
+
+      <div class="test-section" id="cms-test">
+        <h3>⚙️ CMS Interface Test</h3>
+        <p>Status: <span id="cms-status" class="status">Not tested</span></p>
+        <div id="cms-results"></div>
+        <button onclick="testCMSInterface()">Test CMS Interface</button>
+      </div>
+    </div>
+
+    <div class="test-section" id="services-test">
+      <h3>🔧 Services Test</h3>
+      <p>Status: <span id="services-status" class="status">Testing...</span></p>
+      <div id="services-results"></div>
+    </div>
+
+    <div class="test-section" id="projects-test">
+      <h3>🏗️ Projects Test</h3>
+      <p>Status: <span id="projects-status" class="status">Testing...</span></p>
+      <div id="projects-results"></div>
+    </div>
+
+    <div class="test-section info">
+      <h3>🔗 Quick Links</h3>
+      <button onclick="window.open('/admin', '_blank')">Open CMS Admin</button>
+      <button onclick="window.open('/test-cms.html', '_blank')">
+        Open Data Test
+      </button>
+      <button onclick="window.open('/', '_blank')">Open Main Site</button>
+    </div>
+
+    <div class="test-section warning">
+      <h3>⚠️ Common Issues & Solutions</h3>
+      <ul>
+        <li>
+          <strong>CMS not loading:</strong> Check Netlify Identity is enabled
+        </li>
+        <li>
+          <strong>Changes not appearing:</strong> Wait 2-3 minutes, clear cache
+        </li>
+        <li>
+          <strong>Images not uploading:</strong> Check file size (under 2MB)
+        </li>
+        <li>
+          <strong>Login issues:</strong> Check email invitations were sent
+        </li>
+      </ul>
+    </div>
+
+    <script>
+      async function testContentLoading() {
+        const contentTest = document.getElementById("content-test");
+        const status = document.getElementById("content-status");
+        const results = document.getElementById("content-results");
+
+        status.textContent = "Testing...";
+        contentTest.className = "test-section warning";
+
+        try {
+          const tests = [
+            { name: "Site Data", url: "/_data/site.yml" },
+            { name: "Hero Data", url: "/_data/hero.yml" },
+            { name: "Services Section", url: "/_data/services-section.yml" },
+            { name: "Projects Section", url: "/_data/projects-section.yml" },
+          ];
+
+          let allPassed = true;
+          let resultHtml = "<ul>";
+
+          for (const test of tests) {
+            try {
+              const response = await fetch(test.url);
+              if (response.ok) {
+                resultHtml += `<li>✅ ${test.name}: OK</li>`;
+              } else {
+                resultHtml += `<li>❌ ${test.name}: Failed (${response.status})</li>`;
+                allPassed = false;
+              }
+            } catch (error) {
+              resultHtml += `<li>❌ ${test.name}: Error - ${error.message}</li>`;
+              allPassed = false;
+            }
+          }
+
+          resultHtml += "</ul>";
+          results.innerHTML = resultHtml;
+
+          if (allPassed) {
+            status.textContent = "All tests passed!";
+            contentTest.className = "test-section success";
+          } else {
+            status.textContent = "Some tests failed";
+            contentTest.className = "test-section error";
+          }
+        } catch (error) {
+          status.textContent = "Test failed";
+          results.innerHTML = `<p>Error: ${error.message}</p>`;
+          contentTest.className = "test-section error";
+        }
+      }
+
+      async function testCMSInterface() {
+        const cmsTest = document.getElementById("cms-test");
+        const status = document.getElementById("cms-status");
+        const results = document.getElementById("cms-results");
+
+        status.textContent = "Testing...";
+        cmsTest.className = "test-section warning";
+
+        try {
+          const response = await fetch("/admin/");
+          if (response.ok) {
+            status.textContent = "CMS interface accessible";
+            results.innerHTML =
+              '<p>✅ Admin interface is accessible at <a href="/admin" target="_blank">/admin</a></p>';
+            cmsTest.className = "test-section success";
+          } else {
+            status.textContent = "CMS interface not accessible";
+            results.innerHTML = `<p>❌ Admin interface returned status: ${response.status}</p>`;
+            cmsTest.className = "test-section error";
+          }
+        } catch (error) {
+          status.textContent = "CMS test failed";
+          results.innerHTML = `<p>❌ Error accessing admin interface: ${error.message}</p>`;
+          cmsTest.className = "test-section error";
+        }
+      }
+
+      async function testServices() {
+        const servicesTest = document.getElementById("services-test");
+        const status = document.getElementById("services-status");
+        const results = document.getElementById("services-results");
+
+        const serviceFiles = [
+          "residential.yml",
+          "commercial.yml",
+          "solar.yml",
+          "underground.yml",
+          "generator.yml",
+          "emergency.yml",
+          "industrial.yml",
+          "maintenance.yml",
+          "lighting.yml",
+          "smart-home.yml",
+        ];
+
+        let resultHtml = "<h4>Service Files Test:</h4><ul>";
+        let passedCount = 0;
+
+        for (const file of serviceFiles) {
+          try {
+            const response = await fetch(`/_data/services/${file}`);
+            if (response.ok) {
+              resultHtml += `<li>✅ ${file}</li>`;
+              passedCount++;
+            } else {
+              resultHtml += `<li>❌ ${file} (${response.status})</li>`;
+            }
+          } catch (error) {
+            resultHtml += `<li>❌ ${file} (Error)</li>`;
+          }
+        }
+
+        resultHtml += "</ul>";
+        results.innerHTML = resultHtml;
+
+        if (passedCount === serviceFiles.length) {
+          status.textContent = `All ${passedCount} services loaded successfully`;
+          servicesTest.className = "test-section success";
+        } else {
+          status.textContent = `${passedCount}/${serviceFiles.length} services loaded`;
+          servicesTest.className = "test-section warning";
+        }
+      }
+
+      async function testProjects() {
+        const projectsTest = document.getElementById("projects-test");
+        const status = document.getElementById("projects-status");
+        const results = document.getElementById("projects-results");
+
+        const projectFiles = [
+          "coastal-commercial.yml",
+          "residential-upgrade.yml",
+          "solar-installation.yml",
+        ];
+
+        let resultHtml = "<h4>Project Files Test:</h4><ul>";
+        let passedCount = 0;
+
+        for (const file of projectFiles) {
+          try {
+            const response = await fetch(`/_data/projects/${file}`);
+            if (response.ok) {
+              resultHtml += `<li>✅ ${file}</li>`;
+              passedCount++;
+            } else {
+              resultHtml += `<li>❌ ${file} (${response.status})</li>`;
+            }
+          } catch (error) {
+            resultHtml += `<li>❌ ${file} (Error)</li>`;
+          }
+        }
+
+        resultHtml += "</ul>";
+        results.innerHTML = resultHtml;
+
+        if (passedCount === projectFiles.length) {
+          status.textContent = `All ${passedCount} projects loaded successfully`;
+          projectsTest.className = "test-section success";
+        } else {
+          status.textContent = `${passedCount}/${projectFiles.length} projects loaded`;
+          projectsTest.className = "test-section warning";
+        }
+      }
+
+      function checkDeployment() {
+        // This would need to be customized based on your specific deployment
+        alert(
+          "Manual deployment checklist:\n\n1. Commit all files to GitHub\n2. Deploy to Netlify\n3. Enable Netlify Identity\n4. Enable Git Gateway\n5. Invite CMS users\n6. Test admin access\n7. Test content editing"
+        );
+      }
+
+      // Run tests on page load
+      window.addEventListener("load", () => {
+        testContentLoading();
+        testServices();
+        testProjects();
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,15 @@
+title: "Generator Installations"
+description: "Keep your power on when the grid goes down. We install and service generators of all sizes, from portable units to whole-home backup systems."
+image: "./service images/generator service.avif"
+button_text: "Generator Quote"
+button_link: "#contact"
+featured: false
+order: 4
+
+features:
+  - "Whole Home"
+  - "Portable"
+  - "Transfer Switches"
+  - "Legally Required Standby"
+  - "All sizes, big and small"
+  - "Generator sizing and purchasing"

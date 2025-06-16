@@ -1,0 +1,40 @@
+{
+  "name": "roots-power-website",
+  "version": "1.0.0",
+  "description": "Modern electrical services website for Roots Power with Decap CMS integration",
+  "main": "index.html",
+  "scripts": {
+    "dev": "python -m http.server 8000",
+    "preview": "python -m http.server 8080",
+    "build": "echo 'Static site ready for deployment'",
+    "lint": "echo 'Linting HTML, CSS, and JS files'",
+    "optimize": "echo 'Optimizing images and assets'"
+  },
+  "keywords": [
+    "electrical",
+    "services",
+    "website",
+    "decap-cms",
+    "netlify",
+    "responsive",
+    "business",
+    "contractor"
+  ],
+  "author": "Roots Power",
+  "license": "ISC",
+  "homepage": "https://roots-power.vercel.app",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rootspower/website.git"
+  },
+  "bugs": {
+    "url": "https://github.com/rootspower/website/issues"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ],
+  "devDependencies": {},
+  "dependencies": {}
+}

@@ -1,0 +1,48 @@
+[build]
+  publish = "."
+  command = "echo 'Static site - no build required'"
+
+# Redirect admin to the admin page
+[[redirects]]
+  from = "/admin"
+  to = "/admin/index.html"
+  status = 200
+
+# Enable Git Gateway for Decap CMS
+[context.production]
+  environment = { GIT_LFS_ENABLED = "true" }
+
+# Headers for security and proper CMS functioning
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "same-origin"
+
+# Allow CMS admin access
+[[headers]]
+  for = "/admin/*"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+
+# YAML files should be served with correct content type
+[[headers]]
+  for = "/_data/*.yml"
+  [headers.values]
+    Content-Type = "text/yaml; charset=utf-8"
+    Access-Control-Allow-Origin = "*"
+
+# Enable Netlify Identity
+[context.production.environment]
+  NETLIFY_USE_EDGE_FUNCTIONS = "true"
+
+[build.environment]
+  NODE_VERSION = "18"
+
+[context.deploy-preview]
+  command = "echo 'Deploy preview'"
+
+[context.branch-deploy]
+  command = "echo 'Branch deploy'" 
