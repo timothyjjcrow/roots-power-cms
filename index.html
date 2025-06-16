@@ -40,8 +40,8 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
     />
 
-    <!-- Meta tags for better SEO -->
-    <meta name="robots" content="index, follow" />
+    <!-- Netlify Identity Widget for CMS Authentication -->
+    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
   </head>
   <body>
     <!-- Navigation -->
@@ -740,7 +740,17 @@
     <!-- CMS Content Loader -->
     <script src="js/cms-loader.js"></script>
 
-    <!-- GitHub-based CMS Authentication via Decap CMS -->
-    <!-- Authentication is handled directly by Decap CMS with GitHub OAuth -->
+    <!-- Netlify Identity for CMS Authentication -->
+    <script>
+      if (window.netlifyIdentity) {
+        window.netlifyIdentity.on("init", (user) => {
+          if (!user) {
+            window.netlifyIdentity.on("login", () => {
+              document.location.href = "/admin/";
+            });
+          }
+        });
+      }
+    </script>
   </body>
 </html>
