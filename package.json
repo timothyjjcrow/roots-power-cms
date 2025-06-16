@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "python -m http.server 8000",
     "preview": "python -m http.server 8080",
-    "build": "echo 'Static site ready for deployment'",
+    "build": "echo 'Static site ready for deployment' && echo 'Files are already in the correct location for deployment'",
     "lint": "echo 'Linting HTML, CSS, and JS files'",
     "optimize": "echo 'Optimizing images and assets'"
   },
