@@ -8,5 +8,14 @@
   <body>
     <!-- Include the script that builds the page and powers Decap CMS -->
     <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+
+    <!-- Force cache refresh -->
+    <script>
+      // Clear any cached auth state
+      if (window.localStorage) {
+        window.localStorage.removeItem("netlify-cms-user");
+        window.localStorage.removeItem("decap-cms-user");
+      }
+    </script>
   </body>
 </html>

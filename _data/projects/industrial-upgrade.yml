@@ -1,0 +1,16 @@
+title: "Industrial Power Upgrade"
+description: "High-voltage electrical system upgrade for manufacturing facility."
+image: "/service images/commercial 1 service.jpg"
+location: "Humboldt County, CA"
+date: "2024"
+category: "Industrial"
+featured: false
+order: 5
+tags:
+  - "Industrial"
+  - "High-Voltage"
+  - "Manufacturing"
+details:
+  client: "Manufacturing Facility"
+  duration: "3 weeks"
+  scope: "Complete electrical infrastructure upgrade"

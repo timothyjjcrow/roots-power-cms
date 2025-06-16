@@ -1,0 +1,16 @@
+title: "Emergency Power Restoration"
+description: "24/7 emergency electrical repair and power restoration service."
+image: "/service images/residential service.avif"
+location: "Eureka, CA"
+date: "2024"
+category: "Emergency"
+featured: true
+order: 6
+tags:
+  - "Emergency"
+  - "24/7"
+  - "Power Restoration"
+details:
+  client: "Residential Customer"
+  duration: "Same day"
+  scope: "Emergency electrical repair and safety restoration"
