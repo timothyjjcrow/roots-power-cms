@@ -1,6 +1,5 @@
 backend:
-  name: github
-  repo: timothyjjcrow/roots-power-cms
+  name: git-gateway
   branch: main # Branch to update (optional; defaults to master)
 
 # Uncomment below to enable drafts
@@ -10,8 +9,8 @@ media_folder: "images/uploads" # Media files will be stored in the repo under im
 public_folder: "/images/uploads" # The src attribute for uploaded media will begin with /images/uploads
 
 # Site URL (update with your actual Vercel URL)
-site_url: https://your-vercel-url.vercel.app
-display_url: https://your-vercel-url.vercel.app
+site_url: https://roots-power-cms.vercel.app
+display_url: https://roots-power-cms.vercel.app
 
 # Logo for the CMS interface
 logo_url: /logo/RootsPowerColorStacked_BLK_SM_HQ.jpg
