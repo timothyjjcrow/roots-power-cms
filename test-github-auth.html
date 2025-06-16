@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GitHub OAuth Test - Roots Power CMS</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 50px auto;
+        padding: 20px;
+        background: #f5f5f5;
+      }
+      .container {
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+      .status {
+        padding: 15px;
+        margin: 10px 0;
+        border-radius: 5px;
+      }
+      .success {
+        background: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+      }
+      .error {
+        background: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+      }
+      .warning {
+        background: #fff3cd;
+        color: #856404;
+        border: 1px solid #ffeaa7;
+      }
+      .info {
+        background: #d1ecf1;
+        color: #0c5460;
+        border: 1px solid #bee5eb;
+      }
+      .btn {
+        background: #007bff;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        margin: 10px 5px;
+      }
+      .btn:hover {
+        background: #0056b3;
+      }
+      code {
+        background: #f8f9fa;
+        padding: 2px 5px;
+        border-radius: 3px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🔧 GitHub OAuth Configuration Test</h1>
+      <p>This page helps verify your GitHub OAuth setup for the CMS.</p>
+
+      <div id="status"></div>
+
+      <h2>📋 Setup Steps:</h2>
+      <ol>
+        <li>
+          <strong>Create GitHub OAuth App:</strong>
+          <ul>
+            <li>
+              Go to
+              <a href="https://github.com/settings/developers" target="_blank"
+                >GitHub Developer Settings</a
+              >
+            </li>
+            <li>Click "New OAuth App"</li>
+            <li>
+              <strong>Application name:</strong> <code>Roots Power CMS</code>
+            </li>
+            <li>
+              <strong>Homepage URL:</strong>
+              <code>https://roots-power-cms.vercel.app</code>
+            </li>
+            <li>
+              <strong>Authorization callback URL:</strong>
+              <code>https://roots-power-cms.vercel.app/admin</code>
+            </li>
+          </ul>
+        </li>
+        <li>
+          <strong>Get your Client ID</strong> (you don't need the secret for
+          client-side auth)
+        </li>
+      </ol>
+
+      <h2>🧪 Test GitHub Auth:</h2>
+      <button class="btn" onclick="testGitHubAuth()">Test GitHub Login</button>
+      <button class="btn" onclick="checkConfig()">Check CMS Config</button>
+      <a href="/admin" class="btn">Go to CMS Admin</a>
+
+      <h2>📝 Current Config Status:</h2>
+      <div id="configStatus"></div>
+
+      <h2>🔄 Troubleshooting:</h2>
+      <button class="btn" onclick="clearAllCache()">
+        Clear All Browser Cache
+      </button>
+      <button class="btn" onclick="forceReload()">Force Page Reload</button>
+    </div>
+
+    <script>
+      function showStatus(message, type = "info") {
+        document.getElementById(
+          "status"
+        ).innerHTML = `<div class="status ${type}">${message}</div>`;
+      }
+
+      function testGitHubAuth() {
+        showStatus("🔄 Testing GitHub authentication...", "info");
+
+        // Construct GitHub OAuth URL
+        const clientId = "YOUR_CLIENT_ID"; // You'll need to replace this
+        const redirectUri = encodeURIComponent(
+          "https://roots-power-cms.vercel.app/admin"
+        );
+        const scope = encodeURIComponent("repo,user");
+
+        if (clientId === "YOUR_CLIENT_ID") {
+          showStatus(
+            "❌ Please set up GitHub OAuth App first and update the Client ID in this test page.",
+            "warning"
+          );
+          return;
+        }
+
+        const authUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}`;
+
+        showStatus("🔄 Redirecting to GitHub for authentication...", "info");
+        window.open(authUrl, "github-auth", "width=600,height=700");
+      }
+
+      async function checkConfig() {
+        showStatus("🔄 Checking CMS configuration...", "info");
+
+        try {
+          const response = await fetch("/config.yml");
+          if (response.ok) {
+            const configText = await response.text();
+            if (configText.includes("name: github")) {
+              showStatus(
+                "✅ Config file found and using GitHub backend!",
+                "success"
+              );
+              document.getElementById("configStatus").innerHTML = `
+                            <div class="status success">
+                                <strong>✅ Configuration Status:</strong><br>
+                                • Config file: Found<br>
+                                • Backend: GitHub<br>
+                                • Repository: timothyjjcrow/roots-power-cms<br>
+                                • Branch: main
+                            </div>
+                        `;
+            } else if (configText.includes("git-gateway")) {
+              showStatus(
+                "⚠️ Config still using git-gateway instead of GitHub!",
+                "warning"
+              );
+            } else {
+              showStatus(
+                "❌ Config file found but backend configuration unclear",
+                "error"
+              );
+            }
+          } else {
+            showStatus(
+              "❌ Could not load config.yml file (404 error)",
+              "error"
+            );
+          }
+        } catch (error) {
+          showStatus(`❌ Error checking config: ${error.message}`, "error");
+        }
+      }
+
+      function clearAllCache() {
+        // Clear localStorage
+        if (window.localStorage) {
+          const keys = Object.keys(localStorage);
+          keys.forEach((key) => {
+            if (
+              key.includes("netlify") ||
+              key.includes("cms") ||
+              key.includes("auth") ||
+              key.includes("github")
+            ) {
+              localStorage.removeItem(key);
+            }
+          });
+        }
+
+        // Clear sessionStorage
+        if (window.sessionStorage) {
+          const keys = Object.keys(sessionStorage);
+          keys.forEach((key) => {
+            if (
+              key.includes("netlify") ||
+              key.includes("cms") ||
+              key.includes("auth") ||
+              key.includes("github")
+            ) {
+              sessionStorage.removeItem(key);
+            }
+          });
+        }
+
+        showStatus("✅ Browser cache cleared! Try the CMS again.", "success");
+      }
+
+      function forceReload() {
+        window.location.reload(true);
+      }
+
+      // Auto-check config on page load
+      window.addEventListener("load", function () {
+        checkConfig();
+      });
+    </script>
+  </body>
+</html>

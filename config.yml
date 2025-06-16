@@ -1,3 +1,4 @@
+# Roots Power CMS Configuration - Updated: 2024-06-16 11:22 AM
 backend:
   name: github
   repo: timothyjjcrow/roots-power-cms
