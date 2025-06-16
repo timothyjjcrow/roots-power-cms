@@ -1,17 +1,18 @@
-title: "Residential Installations"
-description: "Complete electrical solutions for your home, from new construction to renovations. We handle everything from basic repairs to complex smart home installations."
-image: "./service images/residential service.avif"
-button_text: "Get Quote"
+title: Residential Installations
+description: Complete electrical solutions for your home, from new construction
+  to renovations. We handle everything from basic repairs to complex smart home
+  installations.
+image: /images/uploads/image.jpg
+button_text: Get Quote
 button_link: "#contact"
 featured: false
 order: 1
-
 features:
-  - "New Construction"
-  - "Remodel / Repair"
-  - "Troubleshooting"
-  - "Service Upgrades"
-  - "Underground Installations"
-  - "Lighting Installation and Retrofit"
-  - "Solar / Renewable Energy Installations"
-  - "Generator / Backup Battery Installations"
+  - New Construction
+  - Remodel / Repair
+  - Troubleshooting
+  - Service Upgrades
+  - Underground Installations
+  - Lighting Installation and Retrofit
+  - Solar / Renewable Energy Installations
+  - Generator / Backup Battery Installations
