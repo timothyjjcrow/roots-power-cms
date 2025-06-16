@@ -204,6 +204,7 @@ class CMSLoader {
 
       // Load about data
       this.aboutData = await this.loadYAML("/_data/about.yml");
+      console.log("Loaded about data:", this.aboutData);
 
       // Load services section data
       this.servicesSectionData = await this.loadYAML(
@@ -401,43 +402,80 @@ class CMSLoader {
         aboutSubtitle.textContent = this.aboutData.subtitle;
       }
 
-      // Update about description paragraphs
+      // Update about description paragraphs (only if we have valid data)
       if (
         this.aboutData.description &&
-        Array.isArray(this.aboutData.description)
+        Array.isArray(this.aboutData.description) &&
+        this.aboutData.description.length > 0
       ) {
         const aboutDescription = document.querySelector(".about-description");
         if (aboutDescription) {
-          aboutDescription.innerHTML = "";
-          this.aboutData.description.forEach((paragraph) => {
-            const p = document.createElement("p");
-            p.textContent = paragraph;
-            aboutDescription.appendChild(p);
-          });
+          // Only clear if we have valid descriptions to replace with
+          const validDescriptions = this.aboutData.description.filter(
+            (desc) => desc && desc.trim().length > 0
+          );
+          if (validDescriptions.length > 0) {
+            aboutDescription.innerHTML = "";
+            validDescriptions.forEach((paragraph) => {
+              const p = document.createElement("p");
+              p.textContent = paragraph;
+              aboutDescription.appendChild(p);
+            });
+            console.log("Updated about description with CMS data");
+          } else {
+            console.warn(
+              "No valid descriptions found, keeping hardcoded content"
+            );
+          }
         }
+      } else {
+        console.log(
+          "Using hardcoded about description (no CMS data or empty array)"
+        );
       }
 
-      // Update about features
-      if (this.aboutData.features && Array.isArray(this.aboutData.features)) {
+      // Update about features (only if we have valid data)
+      if (
+        this.aboutData.features &&
+        Array.isArray(this.aboutData.features) &&
+        this.aboutData.features.length > 0
+      ) {
         const featuresGrid = document.querySelector(".about .feature-grid");
         if (featuresGrid) {
-          featuresGrid.innerHTML = "";
-          this.aboutData.features.forEach((feature) => {
-            const featureItem = document.createElement("div");
-            featureItem.className = "feature-item";
-            featureItem.innerHTML = `
-              <div class="feature-icon">
-                <i class="${feature.icon}"></i>
-              </div>
-              <h4>${feature.title}</h4>
-              <p>${feature.description}</p>
-            `;
-            featuresGrid.appendChild(featureItem);
-          });
+          // Only clear if we have valid features to replace with
+          const validFeatures = this.aboutData.features.filter(
+            (feature) =>
+              feature && feature.icon && feature.title && feature.description
+          );
+          if (validFeatures.length > 0) {
+            featuresGrid.innerHTML = "";
+            validFeatures.forEach((feature) => {
+              const featureItem = document.createElement("div");
+              featureItem.className = "feature-item";
+              featureItem.innerHTML = `
+                <div class="feature-icon">
+                  <i class="${feature.icon}"></i>
+                </div>
+                <h4>${feature.title}</h4>
+                <p>${feature.description}</p>
+              `;
+              featuresGrid.appendChild(featureItem);
+              console.log("Added about feature:", feature.title);
+            });
+            console.log("Updated about features with CMS data");
+          } else {
+            console.warn("No valid features found, keeping hardcoded features");
+          }
+        } else {
+          console.warn("About features grid not found");
         }
+      } else {
+        console.log(
+          "Using hardcoded about features (no CMS data or empty array)"
+        );
       }
     } else {
-      console.warn("No about data available");
+      console.warn("No about data available, using hardcoded content");
     }
 
     // Update projects section
