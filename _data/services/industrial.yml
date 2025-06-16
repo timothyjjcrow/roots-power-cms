@@ -1,17 +1,18 @@
-title: "Industrial Electrical Services"
-description: "Comprehensive electrical solutions for industrial facilities, manufacturing plants, and heavy commercial operations. Specialized expertise in high-voltage systems and industrial equipment."
-image: "./service images/industrial service.jpg"
-button_text: "Industrial Quote"
+title: Industrial Electrical Services
+description: Comprehensive electrical solutions for industrial facilities,
+  manufacturing plants, and heavy commercial operations. Specialized expertise
+  in high-voltage systems and industrial equipment.
+image: /images/uploads/image.jpg
+button_text: Industrial Quote
 button_link: "#contact"
 featured: false
 order: 7
-
 features:
-  - "High Voltage Systems"
-  - "Motor Control Centers"
-  - "Industrial Automation"
-  - "Power Distribution"
-  - "Machinery Wiring"
-  - "Control Panel Installation"
-  - "Preventive Maintenance"
-  - "Safety Compliance"
+  - High Voltage Systems
+  - Motor Control Centers
+  - Industrial Automation
+  - Power Distribution
+  - Machinery Wiring
+  - Control Panel Installation
+  - Preventive Maintenance
+  - Safety Compliance
