@@ -39,6 +39,7 @@ class CMSLoader {
       "maintenance.yml",
       "lighting.yml",
       "smart-home.yml",
+      "a-service.yml",
     ];
 
     const commonProjectFiles = [
@@ -71,6 +72,29 @@ class CMSLoader {
     }
 
     // Also try to load any files that might be created by the CMS with different names
+    // Try common patterns that CMS might use for new files
+    const additionalPatterns = [
+      "new-service.yml",
+      "service.yml",
+      "test-service.yml",
+      "custom-service.yml",
+    ];
+
+    if (directoryPath.includes("services")) {
+      // Try additional service patterns
+      for (const pattern of additionalPatterns) {
+        try {
+          const data = await this.loadYAML(`${directoryPath}${pattern}`);
+          if (data && !filesToTry.includes(pattern)) {
+            targetArray.push(data);
+          }
+        } catch (error) {
+          console.debug(`Pattern ${pattern} not found, skipping`);
+        }
+      }
+    }
+
+    // Try to load any files that might be created by the CMS with different names
     // We'll use a more robust approach by trying to fetch a directory listing
     try {
       const response = await fetch(directoryPath);
@@ -81,7 +105,10 @@ class CMSLoader {
         if (ymlMatches) {
           for (const match of ymlMatches) {
             const filename = match.match(/href="([^"]*)"/)[1];
-            if (!filesToTry.includes(filename)) {
+            if (
+              !filesToTry.includes(filename) &&
+              !additionalPatterns.includes(filename)
+            ) {
               try {
                 const data = await this.loadYAML(`${directoryPath}${filename}`);
                 if (data) {
