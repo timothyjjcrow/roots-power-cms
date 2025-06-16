@@ -3,6 +3,7 @@ class CMSLoader {
   constructor() {
     this.siteData = null;
     this.heroData = null;
+    this.aboutData = null;
     this.servicesData = [];
     this.servicesSectionData = null;
     this.projectsData = [];
@@ -201,6 +202,9 @@ class CMSLoader {
       // Load hero data
       this.heroData = await this.loadYAML("/_data/hero.yml");
 
+      // Load about data
+      this.aboutData = await this.loadYAML("/_data/about.yml");
+
       // Load services section data
       this.servicesSectionData = await this.loadYAML(
         "/_data/services-section.yml"
@@ -381,6 +385,59 @@ class CMSLoader {
       }
     } else {
       console.warn("No hero data available");
+    }
+
+    // Update about section
+    if (this.aboutData) {
+      console.log("Applying about data:", this.aboutData);
+
+      const aboutTitle = document.querySelector(".about .section-header h2");
+      if (aboutTitle && this.aboutData.title) {
+        aboutTitle.textContent = this.aboutData.title;
+      }
+
+      const aboutSubtitle = document.querySelector(".about .section-header p");
+      if (aboutSubtitle && this.aboutData.subtitle) {
+        aboutSubtitle.textContent = this.aboutData.subtitle;
+      }
+
+      // Update about description paragraphs
+      if (
+        this.aboutData.description &&
+        Array.isArray(this.aboutData.description)
+      ) {
+        const aboutDescription = document.querySelector(".about-description");
+        if (aboutDescription) {
+          aboutDescription.innerHTML = "";
+          this.aboutData.description.forEach((paragraph) => {
+            const p = document.createElement("p");
+            p.textContent = paragraph;
+            aboutDescription.appendChild(p);
+          });
+        }
+      }
+
+      // Update about features
+      if (this.aboutData.features && Array.isArray(this.aboutData.features)) {
+        const featuresGrid = document.querySelector(".about .feature-grid");
+        if (featuresGrid) {
+          featuresGrid.innerHTML = "";
+          this.aboutData.features.forEach((feature) => {
+            const featureItem = document.createElement("div");
+            featureItem.className = "feature-item";
+            featureItem.innerHTML = `
+              <div class="feature-icon">
+                <i class="${feature.icon}"></i>
+              </div>
+              <h4>${feature.title}</h4>
+              <p>${feature.description}</p>
+            `;
+            featuresGrid.appendChild(featureItem);
+          });
+        }
+      }
+    } else {
+      console.warn("No about data available");
     }
 
     // Update projects section

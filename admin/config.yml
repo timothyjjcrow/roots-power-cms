@@ -96,6 +96,28 @@ collections:
               - { label: "Icon", name: "icon", widget: "string" }
               - { label: "Text", name: "text", widget: "string" }
 
+  # About Section
+  - name: "about_section"
+    label: "About Section"
+    files:
+      - label: "About Content"
+        name: "about"
+        file: "_data/about.yml"
+        fields:
+          - { label: "Title", name: "title", widget: "string" }
+          - { label: "Subtitle", name: "subtitle", widget: "string" }
+          - label: "Description"
+            name: "description"
+            widget: "list"
+            field: { label: "Paragraph", name: "paragraph", widget: "text" }
+          - label: "Features"
+            name: "features"
+            widget: "list"
+            fields:
+              - { label: "Icon", name: "icon", widget: "string" }
+              - { label: "Title", name: "title", widget: "string" }
+              - { label: "Description", name: "description", widget: "text" }
+
   # Services - Folder Collection
   - name: "services"
     label: "Services"
