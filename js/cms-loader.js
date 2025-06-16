@@ -342,13 +342,22 @@ class CMSLoader {
         }
       }
 
-      // Update hero features
-      if (this.heroData.features && Array.isArray(this.heroData.features)) {
+      // Update hero features (only if we have valid CMS data)
+      if (
+        this.heroData.features &&
+        Array.isArray(this.heroData.features) &&
+        this.heroData.features.length > 0
+      ) {
+        console.log("Loading hero features from CMS:", this.heroData.features);
         const featuresContainer = document.querySelector(".hero-features");
         if (featuresContainer) {
-          featuresContainer.innerHTML = "";
-          this.heroData.features.forEach((feature) => {
-            if (feature && feature.icon && feature.text) {
+          // Only clear if we have valid features to replace with
+          const validFeatures = this.heroData.features.filter(
+            (feature) => feature && feature.icon && feature.text
+          );
+          if (validFeatures.length > 0) {
+            featuresContainer.innerHTML = "";
+            validFeatures.forEach((feature) => {
               const featureEl = document.createElement("div");
               featureEl.className = "feature";
               featureEl.innerHTML = `
@@ -356,9 +365,19 @@ class CMSLoader {
                 <span>${feature.text}</span>
               `;
               featuresContainer.appendChild(featureEl);
-            }
-          });
+              console.log("Added feature:", feature.text);
+            });
+          } else {
+            console.warn("No valid features found, keeping hardcoded features");
+          }
+        } else {
+          console.warn("Hero features container not found");
         }
+      } else {
+        console.log(
+          "Using hardcoded hero features (no CMS data or empty array)"
+        );
+        // Keep the existing hardcoded features if no CMS data
       }
     } else {
       console.warn("No hero data available");
