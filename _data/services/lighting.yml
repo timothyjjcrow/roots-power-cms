@@ -1,17 +1,18 @@
-title: "Lighting Design & Installation"
-description: "Professional lighting design and installation services for residential and commercial properties. From energy-efficient LED retrofits to custom lighting solutions."
-image: "./service images/lighting service.jpg"
-button_text: "Lighting Quote"
+title: Lighting Design & Installation
+description: Professional lighting design and installation services for
+  residential and commercial properties. From energy-efficient LED retrofits to
+  custom lighting solutions.
+image: /images/uploads/image.jpg
+button_text: Lighting Quote
 button_link: "#contact"
 featured: false
 order: 9
-
 features:
-  - "LED Retrofit & Upgrades"
-  - "Custom Lighting Design"
-  - "Landscape Lighting"
-  - "Security Lighting"
-  - "Emergency Lighting"
-  - "Smart Lighting Controls"
-  - "Energy Efficient Solutions"
-  - "Architectural Lighting"
+  - LED Retrofit & Upgrades
+  - Custom Lighting Design
+  - Landscape Lighting
+  - Security Lighting
+  - Emergency Lighting
+  - Smart Lighting Controls
+  - Energy Efficient Solutions
+  - Architectural Lighting
