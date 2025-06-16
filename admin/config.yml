@@ -96,42 +96,93 @@ collections:
               - { label: "Icon", name: "icon", widget: "string" }
               - { label: "Text", name: "text", widget: "string" }
 
-  # Services
+  # Services - Individual Files
   - name: "services"
     label: "Services"
-    folder: "_data/services"
-    create: true
-    slug: "{{slug}}"
-    fields:
-      - { label: "Title", name: "title", widget: "string" }
-      - { label: "Description", name: "description", widget: "text" }
-      - { label: "Image", name: "image", widget: "string" }
-      - { label: "Button Text", name: "button_text", widget: "string" }
-      - { label: "Button Link", name: "button_link", widget: "string" }
-      - {
-          label: "Featured",
-          name: "featured",
-          widget: "boolean",
-          default: false,
-        }
-      - { label: "Order", name: "order", widget: "number" }
-      - label: "Features"
-        name: "features"
-        widget: "list"
-        field: { label: "Feature", name: "feature", widget: "string" }
+    files:
+      - label: "Residential Services"
+        name: "residential"
+        file: "_data/services/residential.yml"
+        fields:
+          - { label: "Title", name: "title", widget: "string" }
+          - { label: "Description", name: "description", widget: "text" }
+          - { label: "Image", name: "image", widget: "string" }
+          - { label: "Button Text", name: "button_text", widget: "string" }
+          - { label: "Button Link", name: "button_link", widget: "string" }
+          - { label: "Featured", name: "featured", widget: "boolean" }
+          - { label: "Order", name: "order", widget: "number" }
+          - label: "Features"
+            name: "features"
+            widget: "list"
+            field: { label: "Feature", name: "feature", widget: "string" }
+      - label: "Commercial Services"
+        name: "commercial"
+        file: "_data/services/commercial.yml"
+        fields:
+          - { label: "Title", name: "title", widget: "string" }
+          - { label: "Description", name: "description", widget: "text" }
+          - { label: "Image", name: "image", widget: "string" }
+          - { label: "Button Text", name: "button_text", widget: "string" }
+          - { label: "Button Link", name: "button_link", widget: "string" }
+          - { label: "Featured", name: "featured", widget: "boolean" }
+          - { label: "Order", name: "order", widget: "number" }
+          - label: "Features"
+            name: "features"
+            widget: "list"
+            field: { label: "Feature", name: "feature", widget: "string" }
+      - label: "Solar Services"
+        name: "solar"
+        file: "_data/services/solar.yml"
+        fields:
+          - { label: "Title", name: "title", widget: "string" }
+          - { label: "Description", name: "description", widget: "text" }
+          - { label: "Image", name: "image", widget: "string" }
+          - { label: "Button Text", name: "button_text", widget: "string" }
+          - { label: "Button Link", name: "button_link", widget: "string" }
+          - { label: "Featured", name: "featured", widget: "boolean" }
+          - { label: "Order", name: "order", widget: "number" }
+          - label: "Features"
+            name: "features"
+            widget: "list"
+            field: { label: "Feature", name: "feature", widget: "string" }
 
-  # Projects
+  # Projects - Individual Files
   - name: "projects"
     label: "Projects"
-    folder: "_data/projects"
-    create: true
-    slug: "{{slug}}"
-    fields:
-      - { label: "Title", name: "title", widget: "string" }
-      - { label: "Description", name: "description", widget: "text" }
-      - { label: "Image", name: "image", widget: "string" }
-      - { label: "Order", name: "order", widget: "number" }
-      - label: "Tags"
-        name: "tags"
-        widget: "list"
-        field: { label: "Tag", name: "tag", widget: "string" }
+    files:
+      - label: "Solar Installation Project"
+        name: "solar_installation"
+        file: "_data/projects/solar-installation.yml"
+        fields:
+          - { label: "Title", name: "title", widget: "string" }
+          - { label: "Description", name: "description", widget: "text" }
+          - { label: "Image", name: "image", widget: "string" }
+          - { label: "Order", name: "order", widget: "number" }
+          - label: "Tags"
+            name: "tags"
+            widget: "list"
+            field: { label: "Tag", name: "tag", widget: "string" }
+      - label: "Residential Upgrade Project"
+        name: "residential_upgrade"
+        file: "_data/projects/residential-upgrade.yml"
+        fields:
+          - { label: "Title", name: "title", widget: "string" }
+          - { label: "Description", name: "description", widget: "text" }
+          - { label: "Image", name: "image", widget: "string" }
+          - { label: "Order", name: "order", widget: "number" }
+          - label: "Tags"
+            name: "tags"
+            widget: "list"
+            field: { label: "Tag", name: "tag", widget: "string" }
+      - label: "Coastal Commercial Project"
+        name: "coastal_commercial"
+        file: "_data/projects/coastal-commercial.yml"
+        fields:
+          - { label: "Title", name: "title", widget: "string" }
+          - { label: "Description", name: "description", widget: "text" }
+          - { label: "Image", name: "image", widget: "string" }
+          - { label: "Order", name: "order", widget: "number" }
+          - label: "Tags"
+            name: "tags"
+            widget: "list"
+            field: { label: "Tag", name: "tag", widget: "string" }
