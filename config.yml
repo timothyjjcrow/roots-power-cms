@@ -100,8 +100,8 @@ collections:
   - name: "services"
     label: "Services"
     folder: "_data/services"
-    create: false
-    delete: false
+    create: true
+    delete: true
     slug: "{{slug}}"
     fields:
       - { label: "Title", name: "title", widget: "string" }
@@ -109,8 +109,13 @@ collections:
       - { label: "Image", name: "image", widget: "image" }
       - { label: "Button Text", name: "button_text", widget: "string" }
       - { label: "Button Link", name: "button_link", widget: "string" }
-      - { label: "Featured", name: "featured", widget: "boolean" }
-      - { label: "Order", name: "order", widget: "number" }
+      - {
+          label: "Featured",
+          name: "featured",
+          widget: "boolean",
+          default: false,
+        }
+      - { label: "Order", name: "order", widget: "number", default: 10 }
       - label: "Features"
         name: "features"
         widget: "list"
@@ -120,14 +125,14 @@ collections:
   - name: "projects"
     label: "Projects"
     folder: "_data/projects"
-    create: false
-    delete: false
+    create: true
+    delete: true
     slug: "{{slug}}"
     fields:
       - { label: "Title", name: "title", widget: "string" }
       - { label: "Description", name: "description", widget: "text" }
       - { label: "Image", name: "image", widget: "image" }
-      - { label: "Order", name: "order", widget: "number" }
+      - { label: "Order", name: "order", widget: "number", default: 10 }
       - label: "Tags"
         name: "tags"
         widget: "list"
