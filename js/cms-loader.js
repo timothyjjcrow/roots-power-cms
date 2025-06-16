@@ -298,6 +298,8 @@ class CMSLoader {
 
     // Update hero content
     if (this.heroData) {
+      console.log("Applying hero data:", this.heroData);
+
       const heroTitle = document.querySelector(".hero-title");
       if (heroTitle && this.heroData.title) {
         heroTitle.textContent = this.heroData.title;
@@ -346,16 +348,20 @@ class CMSLoader {
         if (featuresContainer) {
           featuresContainer.innerHTML = "";
           this.heroData.features.forEach((feature) => {
-            const featureEl = document.createElement("div");
-            featureEl.className = "feature";
-            featureEl.innerHTML = `
-              <i class="${feature.icon}"></i>
-              <span>${feature.text}</span>
-            `;
-            featuresContainer.appendChild(featureEl);
+            if (feature && feature.icon && feature.text) {
+              const featureEl = document.createElement("div");
+              featureEl.className = "feature";
+              featureEl.innerHTML = `
+                <i class="${feature.icon}"></i>
+                <span>${feature.text}</span>
+              `;
+              featuresContainer.appendChild(featureEl);
+            }
           });
         }
       }
+    } else {
+      console.warn("No hero data available");
     }
 
     // Update projects section
