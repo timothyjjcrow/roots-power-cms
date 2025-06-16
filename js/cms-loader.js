@@ -106,10 +106,22 @@ class CMSLoader {
     let currentObj = result;
     let objStack = [result];
     let indent = 0;
+    let currentArray = null;
+    let arrayKey = null;
 
     for (let line of lines) {
       line = line.replace(/^\s*#.*/, ""); // Remove comments
       if (!line.trim()) continue;
+
+      // Check for array items
+      const arrayMatch = line.match(/^(\s*)-\s*(.*)$/);
+      if (arrayMatch) {
+        const [, spaces, value] = arrayMatch;
+        if (currentArray) {
+          currentArray.push(value.replace(/^["']|["']$/g, "")); // Remove quotes
+        }
+        continue;
+      }
 
       const match = line.match(/^(\s*)([^:]+):\s*(.*)$/);
       if (match) {
@@ -128,16 +140,21 @@ class CMSLoader {
           }
           currentObj = objStack[objStack.length - 1];
           indent = currentIndent;
+          currentArray = null;
+          arrayKey = null;
         }
 
         if (value.trim()) {
           // Has value
           currentObj[key.trim()] = value.replace(/^["']|["']$/g, ""); // Remove quotes
+          currentArray = null;
+          arrayKey = null;
         } else {
-          // Object
-          currentObj[key.trim()] = {};
-          objStack.push(currentObj[key.trim()]);
-          currentObj = currentObj[key.trim()];
+          // Object or array
+          const keyName = key.trim();
+          currentObj[keyName] = [];
+          currentArray = currentObj[keyName];
+          arrayKey = keyName;
         }
       }
     }
