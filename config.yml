@@ -8,9 +8,9 @@ backend:
 media_folder: "images/uploads" # Media files will be stored in the repo under images/uploads
 public_folder: "/images/uploads" # The src attribute for uploaded media will begin with /images/uploads
 
-# Site URL (update with your actual Vercel URL)
-site_url: https://roots-power-cms.vercel.app
-display_url: https://roots-power-cms.vercel.app
+# Site URL (update with your actual Netlify URL)
+site_url: https://roots-power.netlify.app
+display_url: https://roots-power.netlify.app
 
 # Logo for the CMS interface
 logo_url: /logo/RootsPowerColorStacked_BLK_SM_HQ.jpg
