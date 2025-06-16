@@ -145,8 +145,20 @@ class CMSLoader {
         }
 
         if (value.trim()) {
-          // Has value
-          currentObj[key.trim()] = value.replace(/^["']|["']$/g, ""); // Remove quotes
+          // Has value - parse different data types
+          let parsedValue = value.replace(/^["']|["']$/g, ""); // Remove quotes
+
+          // Parse booleans
+          if (parsedValue === "true") {
+            parsedValue = true;
+          } else if (parsedValue === "false") {
+            parsedValue = false;
+          } else if (!isNaN(parsedValue) && !isNaN(parseFloat(parsedValue))) {
+            // Parse numbers
+            parsedValue = parseFloat(parsedValue);
+          }
+
+          currentObj[key.trim()] = parsedValue;
           currentArray = null;
           arrayKey = null;
         } else {
