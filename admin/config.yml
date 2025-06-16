@@ -1,0 +1,143 @@
+backend:
+  name: github
+  repo: timothyjjcrow/roots-power-cms
+  branch: main
+
+media_folder: "images/uploads"
+public_folder: "/images/uploads"
+
+collections:
+  # Site Settings
+  - name: "site_settings"
+    label: "Site Settings"
+    files:
+      - label: "Site Information"
+        name: "site"
+        file: "_data/site.yml"
+        fields:
+          - { label: "Site Title", name: "title", widget: "string" }
+          - { label: "Description", name: "description", widget: "text" }
+          - { label: "Site URL", name: "url", widget: "string" }
+          - { label: "Phone", name: "phone", widget: "string" }
+          - { label: "Email", name: "email", widget: "string" }
+          - { label: "License", name: "license", widget: "string" }
+          - label: "Address"
+            name: "address"
+            widget: "object"
+            fields:
+              - { label: "Street", name: "street", widget: "string" }
+              - { label: "City", name: "city", widget: "string" }
+              - { label: "State", name: "state", widget: "string" }
+              - { label: "Zip", name: "zip", widget: "string" }
+          - label: "Social Media"
+            name: "social"
+            widget: "object"
+            fields:
+              - {
+                  label: "Facebook",
+                  name: "facebook",
+                  widget: "string",
+                  required: false,
+                }
+              - {
+                  label: "Instagram",
+                  name: "instagram",
+                  widget: "string",
+                  required: false,
+                }
+              - {
+                  label: "LinkedIn",
+                  name: "linkedin",
+                  widget: "string",
+                  required: false,
+                }
+              - {
+                  label: "Twitter",
+                  name: "twitter",
+                  widget: "string",
+                  required: false,
+                }
+
+  # Hero Section
+  - name: "hero_section"
+    label: "Hero Section"
+    files:
+      - label: "Hero Content"
+        name: "hero"
+        file: "_data/hero.yml"
+        fields:
+          - { label: "Badge", name: "badge", widget: "string" }
+          - { label: "Title", name: "title", widget: "string" }
+          - { label: "Description", name: "description", widget: "text" }
+          - {
+              label: "Primary Button Text",
+              name: "primary_button_text",
+              widget: "string",
+            }
+          - {
+              label: "Primary Button Link",
+              name: "primary_button_link",
+              widget: "string",
+            }
+          - {
+              label: "Secondary Button Text",
+              name: "secondary_button_text",
+              widget: "string",
+            }
+          - {
+              label: "Secondary Button Link",
+              name: "secondary_button_link",
+              widget: "string",
+            }
+          - label: "Features"
+            name: "features"
+            widget: "list"
+            fields:
+              - { label: "Icon", name: "icon", widget: "string" }
+              - { label: "Text", name: "text", widget: "string" }
+
+  # Services - Folder Collection
+  - name: "services"
+    label: "Services"
+    folder: "_data/services"
+    create: true
+    delete: true
+    slug: "{{slug}}"
+    extension: "yml"
+    format: "yml"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Description", name: "description", widget: "text" }
+      - { label: "Image", name: "image", widget: "image" }
+      - { label: "Button Text", name: "button_text", widget: "string" }
+      - { label: "Button Link", name: "button_link", widget: "string" }
+      - {
+          label: "Featured",
+          name: "featured",
+          widget: "boolean",
+          default: false,
+        }
+      - { label: "Order", name: "order", widget: "number", default: 10 }
+      - label: "Features"
+        name: "features"
+        widget: "list"
+        field: { label: "Feature", name: "feature", widget: "string" }
+
+  # Projects - Folder Collection
+  - name: "projects"
+    label: "Projects"
+    folder: "_data/projects"
+    create: true
+    delete: true
+    slug: "{{slug}}"
+    extension: "yml"
+    format: "yml"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Description", name: "description", widget: "text" }
+      - { label: "Image", name: "image", widget: "image" }
+      - { label: "Order", name: "order", widget: "number", default: 10 }
+      - label: "Tags"
+        name: "tags"
+        widget: "list"
+        field: { label: "Tag", name: "tag", widget: "string" }
