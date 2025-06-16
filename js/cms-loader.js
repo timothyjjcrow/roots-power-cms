@@ -39,7 +39,7 @@ class CMSLoader {
       "maintenance.yml",
       "lighting.yml",
       "smart-home.yml",
-      "a-service.yml",
+      "a.yml",
     ];
 
     const commonProjectFiles = [
