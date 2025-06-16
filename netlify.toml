@@ -1,6 +1,11 @@
 [build]
   publish = "."
-  command = "echo 'Static site - no build required'"
+  command = "ls -la && echo 'Static site ready - files are in root directory'"
+
+# Disable auto-detection to prevent Jekyll/other framework conflicts
+[build.environment]
+  NODE_VERSION = "18"
+  RUBY_VERSION = "2.7.2"
 
 # Redirect admin to the admin page
 [[redirects]]
@@ -35,9 +40,6 @@
   [headers.values]
     Content-Type = "text/yaml; charset=utf-8"
     Access-Control-Allow-Origin = "*"
-
-[build.environment]
-  NODE_VERSION = "18"
 
 [context.deploy-preview]
   command = "echo 'Deploy preview'"
