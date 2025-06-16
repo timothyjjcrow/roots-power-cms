@@ -96,13 +96,169 @@ collections:
               - { label: "Icon", name: "icon", widget: "string" }
               - { label: "Text", name: "text", widget: "string" }
 
-  # Services - Folder Collection (Can Create New)
+  # Existing Services - Individual Files
   - name: "services"
     label: "Services"
+    files:
+      - label: "Residential Services"
+        name: "residential"
+        file: "_data/services/residential.yml"
+        fields:
+          - { label: "Title", name: "title", widget: "string" }
+          - { label: "Description", name: "description", widget: "text" }
+          - { label: "Image", name: "image", widget: "image" }
+          - { label: "Button Text", name: "button_text", widget: "string" }
+          - { label: "Button Link", name: "button_link", widget: "string" }
+          - { label: "Featured", name: "featured", widget: "boolean" }
+          - { label: "Order", name: "order", widget: "number" }
+          - label: "Features"
+            name: "features"
+            widget: "list"
+            field: { label: "Feature", name: "feature", widget: "string" }
+      - label: "Commercial Services"
+        name: "commercial"
+        file: "_data/services/commercial.yml"
+        fields:
+          - { label: "Title", name: "title", widget: "string" }
+          - { label: "Description", name: "description", widget: "text" }
+          - { label: "Image", name: "image", widget: "image" }
+          - { label: "Button Text", name: "button_text", widget: "string" }
+          - { label: "Button Link", name: "button_link", widget: "string" }
+          - { label: "Featured", name: "featured", widget: "boolean" }
+          - { label: "Order", name: "order", widget: "number" }
+          - label: "Features"
+            name: "features"
+            widget: "list"
+            field: { label: "Feature", name: "feature", widget: "string" }
+      - label: "Solar Services"
+        name: "solar"
+        file: "_data/services/solar.yml"
+        fields:
+          - { label: "Title", name: "title", widget: "string" }
+          - { label: "Description", name: "description", widget: "text" }
+          - { label: "Image", name: "image", widget: "image" }
+          - { label: "Button Text", name: "button_text", widget: "string" }
+          - { label: "Button Link", name: "button_link", widget: "string" }
+          - { label: "Featured", name: "featured", widget: "boolean" }
+          - { label: "Order", name: "order", widget: "number" }
+          - label: "Features"
+            name: "features"
+            widget: "list"
+            field: { label: "Feature", name: "feature", widget: "string" }
+      - label: "Generator Services"
+        name: "generator"
+        file: "_data/services/generator.yml"
+        fields:
+          - { label: "Title", name: "title", widget: "string" }
+          - { label: "Description", name: "description", widget: "text" }
+          - { label: "Image", name: "image", widget: "image" }
+          - { label: "Button Text", name: "button_text", widget: "string" }
+          - { label: "Button Link", name: "button_link", widget: "string" }
+          - { label: "Featured", name: "featured", widget: "boolean" }
+          - { label: "Order", name: "order", widget: "number" }
+          - label: "Features"
+            name: "features"
+            widget: "list"
+            field: { label: "Feature", name: "feature", widget: "string" }
+      - label: "Emergency Services"
+        name: "emergency"
+        file: "_data/services/emergency.yml"
+        fields:
+          - { label: "Title", name: "title", widget: "string" }
+          - { label: "Description", name: "description", widget: "text" }
+          - { label: "Image", name: "image", widget: "image" }
+          - { label: "Button Text", name: "button_text", widget: "string" }
+          - { label: "Button Link", name: "button_link", widget: "string" }
+          - { label: "Featured", name: "featured", widget: "boolean" }
+          - { label: "Order", name: "order", widget: "number" }
+          - label: "Features"
+            name: "features"
+            widget: "list"
+            field: { label: "Feature", name: "feature", widget: "string" }
+      - label: "Industrial Services"
+        name: "industrial"
+        file: "_data/services/industrial.yml"
+        fields:
+          - { label: "Title", name: "title", widget: "string" }
+          - { label: "Description", name: "description", widget: "text" }
+          - { label: "Image", name: "image", widget: "image" }
+          - { label: "Button Text", name: "button_text", widget: "string" }
+          - { label: "Button Link", name: "button_link", widget: "string" }
+          - { label: "Featured", name: "featured", widget: "boolean" }
+          - { label: "Order", name: "order", widget: "number" }
+          - label: "Features"
+            name: "features"
+            widget: "list"
+            field: { label: "Feature", name: "feature", widget: "string" }
+      - label: "Lighting Services"
+        name: "lighting"
+        file: "_data/services/lighting.yml"
+        fields:
+          - { label: "Title", name: "title", widget: "string" }
+          - { label: "Description", name: "description", widget: "text" }
+          - { label: "Image", name: "image", widget: "image" }
+          - { label: "Button Text", name: "button_text", widget: "string" }
+          - { label: "Button Link", name: "button_link", widget: "string" }
+          - { label: "Featured", name: "featured", widget: "boolean" }
+          - { label: "Order", name: "order", widget: "number" }
+          - label: "Features"
+            name: "features"
+            widget: "list"
+            field: { label: "Feature", name: "feature", widget: "string" }
+      - label: "Maintenance Services"
+        name: "maintenance"
+        file: "_data/services/maintenance.yml"
+        fields:
+          - { label: "Title", name: "title", widget: "string" }
+          - { label: "Description", name: "description", widget: "text" }
+          - { label: "Image", name: "image", widget: "image" }
+          - { label: "Button Text", name: "button_text", widget: "string" }
+          - { label: "Button Link", name: "button_link", widget: "string" }
+          - { label: "Featured", name: "featured", widget: "boolean" }
+          - { label: "Order", name: "order", widget: "number" }
+          - label: "Features"
+            name: "features"
+            widget: "list"
+            field: { label: "Feature", name: "feature", widget: "string" }
+      - label: "Smart Home Services"
+        name: "smart_home"
+        file: "_data/services/smart-home.yml"
+        fields:
+          - { label: "Title", name: "title", widget: "string" }
+          - { label: "Description", name: "description", widget: "text" }
+          - { label: "Image", name: "image", widget: "image" }
+          - { label: "Button Text", name: "button_text", widget: "string" }
+          - { label: "Button Link", name: "button_link", widget: "string" }
+          - { label: "Featured", name: "featured", widget: "boolean" }
+          - { label: "Order", name: "order", widget: "number" }
+          - label: "Features"
+            name: "features"
+            widget: "list"
+            field: { label: "Feature", name: "feature", widget: "string" }
+      - label: "Underground Services"
+        name: "underground"
+        file: "_data/services/underground.yml"
+        fields:
+          - { label: "Title", name: "title", widget: "string" }
+          - { label: "Description", name: "description", widget: "text" }
+          - { label: "Image", name: "image", widget: "image" }
+          - { label: "Button Text", name: "button_text", widget: "string" }
+          - { label: "Button Link", name: "button_link", widget: "string" }
+          - { label: "Featured", name: "featured", widget: "boolean" }
+          - { label: "Order", name: "order", widget: "number" }
+          - label: "Features"
+            name: "features"
+            widget: "list"
+            field: { label: "Feature", name: "feature", widget: "string" }
+
+  # New Services - Folder Collection for Adding More
+  - name: "new_services"
+    label: "Add New Services"
     folder: "_data/services"
     create: true
     delete: true
     slug: "{{slug}}"
+    filter: { field: "title", value: "___NEW___" }
     fields:
       - { label: "Title", name: "title", widget: "string" }
       - { label: "Description", name: "description", widget: "text" }
@@ -121,13 +277,55 @@ collections:
         widget: "list"
         field: { label: "Feature", name: "feature", widget: "string" }
 
-  # Projects - Folder Collection (Can Create New)
+  # Existing Projects - Individual Files
   - name: "projects"
     label: "Projects"
+    files:
+      - label: "Solar Installation Project"
+        name: "solar_installation"
+        file: "_data/projects/solar-installation.yml"
+        fields:
+          - { label: "Title", name: "title", widget: "string" }
+          - { label: "Description", name: "description", widget: "text" }
+          - { label: "Image", name: "image", widget: "image" }
+          - { label: "Order", name: "order", widget: "number" }
+          - label: "Tags"
+            name: "tags"
+            widget: "list"
+            field: { label: "Tag", name: "tag", widget: "string" }
+      - label: "Residential Upgrade Project"
+        name: "residential_upgrade"
+        file: "_data/projects/residential-upgrade.yml"
+        fields:
+          - { label: "Title", name: "title", widget: "string" }
+          - { label: "Description", name: "description", widget: "text" }
+          - { label: "Image", name: "image", widget: "image" }
+          - { label: "Order", name: "order", widget: "number" }
+          - label: "Tags"
+            name: "tags"
+            widget: "list"
+            field: { label: "Tag", name: "tag", widget: "string" }
+      - label: "Coastal Commercial Project"
+        name: "coastal_commercial"
+        file: "_data/projects/coastal-commercial.yml"
+        fields:
+          - { label: "Title", name: "title", widget: "string" }
+          - { label: "Description", name: "description", widget: "text" }
+          - { label: "Image", name: "image", widget: "image" }
+          - { label: "Order", name: "order", widget: "number" }
+          - label: "Tags"
+            name: "tags"
+            widget: "list"
+            field: { label: "Tag", name: "tag", widget: "string" }
+
+  # New Projects - Folder Collection for Adding More
+  - name: "new_projects"
+    label: "Add New Projects"
     folder: "_data/projects"
     create: true
     delete: true
     slug: "{{slug}}"
+    filter: { field: "title", value: "___NEW___" }
     fields:
       - { label: "Title", name: "title", widget: "string" }
       - { label: "Description", name: "description", widget: "text" }
