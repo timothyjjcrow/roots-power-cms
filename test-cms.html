@@ -1,239 +1,36 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
   <head>
-    <meta charset="UTF-8" />
+    <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CMS Test Page</title>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        max-width: 800px;
-        margin: 0 auto;
-        padding: 20px;
-      }
-      .test-section {
-        margin: 20px 0;
-        padding: 15px;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-      }
-      .success {
-        background: #d4edda;
-        border-color: #c3e6cb;
-      }
-      .error {
-        background: #f8d7da;
-        border-color: #f5c6cb;
-      }
-      .loading {
-        background: #fff3cd;
-        border-color: #ffeaa7;
-      }
-      pre {
-        background: #f8f9fa;
-        padding: 10px;
-        border-radius: 3px;
-        overflow-x: auto;
-      }
-    </style>
+    <title>Test CMS</title>
+    <script src="https://unpkg.com/netlify-cms@^2.0.0/dist/netlify-cms.js"></script>
   </head>
   <body>
-    <h1>Roots Power CMS Test</h1>
-    <p>This page tests if the CMS content loading is working properly.</p>
-
-    <div id="site-test" class="test-section loading">
-      <h3>Site Data Test</h3>
-      <p>Status: <span id="site-status">Loading...</span></p>
-      <pre id="site-data">Fetching site data...</pre>
-    </div>
-
-    <div id="hero-test" class="test-section loading">
-      <h3>Hero Data Test</h3>
-      <p>Status: <span id="hero-status">Loading...</span></p>
-      <pre id="hero-data">Fetching hero data...</pre>
-    </div>
-
-    <div id="services-test" class="test-section loading">
-      <h3>Services Data Test</h3>
-      <p>Status: <span id="services-status">Loading...</span></p>
-      <pre id="services-data">Fetching services data...</pre>
-    </div>
-
-    <div id="projects-test" class="test-section loading">
-      <h3>Projects Data Test</h3>
-      <p>Status: <span id="projects-status">Loading...</span></p>
-      <pre id="projects-data">Fetching projects data...</pre>
-    </div>
-
-    <div id="projects-section-test" class="test-section loading">
-      <h3>Projects Section Data Test</h3>
-      <p>Status: <span id="projects-section-status">Loading...</span></p>
-      <pre id="projects-section-data">Fetching projects section data...</pre>
-    </div>
-
     <script>
-      async function testCMSData() {
-        // Test site data
-        try {
-          const siteResponse = await fetch("/_data/site.yml");
-          const siteText = await siteResponse.text();
-
-          document.getElementById("site-status").textContent = siteResponse.ok
-            ? "Success"
-            : "Failed";
-          document.getElementById("site-data").textContent = siteResponse.ok
-            ? siteText
-            : `Error: ${siteResponse.status}`;
-          document.getElementById("site-test").className = `test-section ${
-            siteResponse.ok ? "success" : "error"
-          }`;
-        } catch (error) {
-          document.getElementById("site-status").textContent = "Error";
-          document.getElementById("site-data").textContent = error.message;
-          document.getElementById("site-test").className = "test-section error";
-        }
-
-        // Test hero data
-        try {
-          const heroResponse = await fetch("/_data/hero.yml");
-          const heroText = await heroResponse.text();
-
-          document.getElementById("hero-status").textContent = heroResponse.ok
-            ? "Success"
-            : "Failed";
-          document.getElementById("hero-data").textContent = heroResponse.ok
-            ? heroText
-            : `Error: ${heroResponse.status}`;
-          document.getElementById("hero-test").className = `test-section ${
-            heroResponse.ok ? "success" : "error"
-          }`;
-        } catch (error) {
-          document.getElementById("hero-status").textContent = "Error";
-          document.getElementById("hero-data").textContent = error.message;
-          document.getElementById("hero-test").className = "test-section error";
-        }
-
-        // Test services data
-        try {
-          const serviceFiles = [
-            "residential.yml",
-            "commercial.yml",
-            "solar.yml",
-            "underground.yml",
-            "generator.yml",
-            "emergency.yml",
-            "industrial.yml",
-            "maintenance.yml",
-            "lighting.yml",
-            "smart-home.yml",
-          ];
-          const results = [];
-
-          for (const file of serviceFiles) {
-            try {
-              const response = await fetch(`/_data/services/${file}`);
-              const text = await response.text();
-              results.push(
-                `${file}: ${response.ok ? "OK" : "FAILED"}\n${text}\n\n`
-              );
-            } catch (error) {
-              results.push(`${file}: ERROR - ${error.message}\n\n`);
-            }
-          }
-
-          document.getElementById("services-status").textContent = "Completed";
-          document.getElementById("services-data").textContent =
-            results.join("---\n");
-          document.getElementById("services-test").className =
-            "test-section success";
-        } catch (error) {
-          document.getElementById("services-status").textContent = "Error";
-          document.getElementById("services-data").textContent = error.message;
-          document.getElementById("services-test").className =
-            "test-section error";
-        }
-
-        // Test projects section data
-        try {
-          const projectsSectionResponse = await fetch(
-            "/_data/projects-section.yml"
-          );
-          const projectsSectionText = await projectsSectionResponse.text();
-
-          document.getElementById("projects-section-status").textContent =
-            projectsSectionResponse.ok ? "Success" : "Failed";
-          document.getElementById("projects-section-data").textContent =
-            projectsSectionResponse.ok
-              ? projectsSectionText
-              : `Error: ${projectsSectionResponse.status}`;
-          document.getElementById(
-            "projects-section-test"
-          ).className = `test-section ${
-            projectsSectionResponse.ok ? "success" : "error"
-          }`;
-        } catch (error) {
-          document.getElementById("projects-section-status").textContent =
-            "Error";
-          document.getElementById("projects-section-data").textContent =
-            error.message;
-          document.getElementById("projects-section-test").className =
-            "test-section error";
-        }
-
-        // Test projects data
-        try {
-          const projectFiles = [
-            "coastal-commercial.yml",
-            "residential-upgrade.yml",
-            "solar-installation.yml",
-          ];
-          const results = [];
-
-          for (const file of projectFiles) {
-            try {
-              const response = await fetch(`/_data/projects/${file}`);
-              const text = await response.text();
-              results.push(
-                `${file}: ${response.ok ? "OK" : "FAILED"}\n${text}\n\n`
-              );
-            } catch (error) {
-              results.push(`${file}: ERROR - ${error.message}\n\n`);
-            }
-          }
-
-          document.getElementById("projects-status").textContent = "Completed";
-          document.getElementById("projects-data").textContent =
-            results.join("---\n");
-          document.getElementById("projects-test").className =
-            "test-section success";
-        } catch (error) {
-          document.getElementById("projects-status").textContent = "Error";
-          document.getElementById("projects-data").textContent = error.message;
-          document.getElementById("projects-test").className =
-            "test-section error";
-        }
-      }
-
-      // Run tests when page loads
-      testCMSData();
+      CMS.init({
+        config: {
+          backend: {
+            name: "git-gateway",
+            branch: "main",
+          },
+          media_folder: "images/uploads",
+          public_folder: "/images/uploads",
+          collections: [
+            {
+              name: "test",
+              label: "Test",
+              folder: "_data",
+              create: true,
+              slug: "{{slug}}",
+              fields: [
+                { label: "Title", name: "title", widget: "string" },
+                { label: "Body", name: "body", widget: "markdown" },
+              ],
+            },
+          ],
+        },
+      });
     </script>
-
-    <div class="test-section">
-      <h3>Instructions</h3>
-      <p><strong>For local testing:</strong></p>
-      <ul>
-        <li>
-          Run a local server (e.g., <code>python -m http.server 8000</code>)
-        </li>
-        <li>Access this page through the server (not file://)</li>
-        <li>Check if all data loads successfully</li>
-      </ul>
-      <p><strong>For production:</strong></p>
-      <ul>
-        <li>Deploy to Netlify with the files in this repository</li>
-        <li>Enable Netlify Identity and Git Gateway</li>
-        <li>Access your site's <code>/admin</code> path to use the CMS</li>
-      </ul>
-    </div>
   </body>
 </html>
