@@ -85,6 +85,7 @@ class CMSLoader {
           "solar.yml",
           "underground.yml",
           "generator.yml",
+          "emergency-services.yml",
           "industrial.yml",
           "lighting.yml",
           "smart-home.yml",
