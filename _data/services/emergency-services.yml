@@ -4,7 +4,7 @@ image: /images/uploads/image.jpg
 button_text: contact us
 button_link: "#contact"
 featured: true
-order: 10
+order: 9
 features:
   - 24/7
   - home inspection
