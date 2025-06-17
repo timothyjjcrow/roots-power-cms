@@ -47,6 +47,17 @@ function setupEventListeners() {
     backToTopBtn.addEventListener("click", scrollToTop);
   }
 
+  // Logo click to scroll to top
+  const navLogo = document.querySelector(".nav-logo");
+  if (navLogo) {
+    navLogo.addEventListener("click", function (e) {
+      e.preventDefault();
+      scrollToTop();
+    });
+    // Add cursor pointer to indicate it's clickable
+    navLogo.style.cursor = "pointer";
+  }
+
   // Smooth scroll for anchor links
   document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
     anchor.addEventListener("click", handleSmoothScroll);
