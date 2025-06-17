@@ -547,6 +547,13 @@ img {
   background: var(--bg-secondary);
   position: relative;
   z-index: 2;
+  /* Hide initially to prevent flash of old content */
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.services.loaded {
+  opacity: 1;
 }
 
 .services-grid {
@@ -791,6 +798,13 @@ img {
   background: var(--bg-primary);
   position: relative;
   z-index: 2;
+  /* Hide initially to prevent flash of old content */
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.projects.loaded {
+  opacity: 1;
 }
 
 .projects-grid {

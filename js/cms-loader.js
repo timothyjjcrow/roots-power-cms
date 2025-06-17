@@ -719,6 +719,13 @@ class CMSLoader {
       }
     }
 
+    // Show the services section now that content is loaded
+    const servicesSection = document.querySelector(".services");
+    if (servicesSection) {
+      servicesSection.classList.add("loaded");
+      console.log("✅ Services section made visible");
+    }
+
     // Update projects content (only if we have valid data)
     if (this.projectsData && this.projectsData.length > 0) {
       const projectsGrid = document.querySelector(".projects-grid");
@@ -780,6 +787,13 @@ class CMSLoader {
       }
     } else {
       console.warn("No projects data available, using hardcoded content");
+    }
+
+    // Show the projects section now that content is loaded
+    const projectsSection = document.querySelector(".projects");
+    if (projectsSection) {
+      projectsSection.classList.add("loaded");
+      console.log("✅ Projects section made visible");
     }
 
     console.log("CMS content applied successfully");
