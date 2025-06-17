@@ -1,10 +1,8 @@
 services:
   - commercial.yml
-  - emergency.yml
   - generator.yml
   - industrial.yml
   - lighting.yml
-  - maintenance.yml
   - residential.yml
   - smart-home.yml
   - solar.yml
