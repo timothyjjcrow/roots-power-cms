@@ -18,7 +18,8 @@ class CMSLoader {
         throw new Error(`Failed to load ${url}: ${response.status}`);
       }
       const text = await response.text();
-      return this.parseYAML(text);
+      // Use proper js-yaml library for accurate parsing of multi-line strings
+      return jsyaml.load(text);
     } catch (error) {
       console.warn(`Could not load ${url}, using fallback content:`, error);
       return null;
@@ -605,7 +606,16 @@ class CMSLoader {
               </div>
             `;
             projectsGrid.appendChild(projectCard);
-            console.log("Added project:", project.title);
+            console.log(
+              "Added project:",
+              project.title,
+              "with description:",
+              project.description
+            );
+            console.log(
+              "Description length:",
+              project.description ? project.description.length : 0
+            );
           });
           console.log("Updated projects with CMS data");
         } else {
