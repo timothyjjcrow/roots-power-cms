@@ -4,39 +4,123 @@
 const fs = require("fs");
 const path = require("path");
 
-function updateRegistry(directory, registryFile, key) {
+// Function to scan directory and update registry
+function updateRegistry(directory, registryFile, arrayKey) {
+  console.log(`\n🔍 Scanning ${directory} for .yml files...`);
+
   try {
-    // Read all .yml files in the directory
+    // Read all files in the directory
     const files = fs
       .readdirSync(directory)
       .filter((file) => file.endsWith(".yml"))
       .sort();
 
-    // Create registry content
-    const registryContent = `${key}:\n${files
+    console.log(`📁 Found ${files.length} .yml files:`, files);
+
+    // Read or create registry
+    let registryData = {};
+    if (fs.existsSync(registryFile)) {
+      const registryContent = fs.readFileSync(registryFile, "utf8");
+      // Simple YAML parsing for our structure
+      const lines = registryContent.split("\n");
+      let currentArray = [];
+      let inArray = false;
+
+      for (const line of lines) {
+        if (line.trim().startsWith(arrayKey + ":")) {
+          inArray = true;
+          continue;
+        }
+        if (inArray && line.trim().startsWith("- ")) {
+          currentArray.push(line.trim().substring(2));
+        } else if (inArray && line.trim() && !line.startsWith(" ")) {
+          break;
+        }
+      }
+      registryData[arrayKey] = currentArray;
+      console.log(
+        `📋 Current registry has ${currentArray.length} files:`,
+        currentArray
+      );
+    } else {
+      registryData[arrayKey] = [];
+      console.log(`📄 Creating new registry file: ${registryFile}`);
+    }
+
+    // Update registry with all found files
+    const currentFiles = registryData[arrayKey] || [];
+    const newFiles = files.filter((file) => !currentFiles.includes(file));
+    const removedFiles = currentFiles.filter((file) => !files.includes(file));
+
+    if (newFiles.length > 0) {
+      console.log(`🆕 Adding ${newFiles.length} new files:`, newFiles);
+    }
+
+    if (removedFiles.length > 0) {
+      console.log(
+        `🗑️  Removing ${removedFiles.length} missing files:`,
+        removedFiles
+      );
+    }
+
+    // Update the registry
+    registryData[arrayKey] = files;
+
+    // Write back to registry file in proper YAML format
+    const yamlContent = `${arrayKey}:\n${files
       .map((file) => `  - ${file}`)
       .join("\n")}\n`;
 
-    // Write registry file
-    fs.writeFileSync(registryFile, registryContent);
-    console.log(`Updated ${registryFile} with ${files.length} files`);
+    fs.writeFileSync(registryFile, yamlContent, "utf8");
+    console.log(`✅ Registry updated: ${registryFile}`);
+    console.log(`📊 Total files in registry: ${files.length}`);
+
+    return {
+      total: files.length,
+      added: newFiles.length,
+      removed: removedFiles.length,
+      files: files,
+    };
   } catch (error) {
-    console.error(`Error updating ${registryFile}:`, error);
+    console.error(
+      `❌ Error updating registry for ${directory}:`,
+      error.message
+    );
+    return null;
   }
 }
 
-// Update services registry
-updateRegistry(
-  path.join(__dirname, "_data", "services"),
-  path.join(__dirname, "_data", "services-registry.yml"),
-  "services"
-);
+// Main execution
+console.log("🚀 Starting registry update...");
 
 // Update projects registry
-updateRegistry(
-  path.join(__dirname, "_data", "projects"),
-  path.join(__dirname, "_data", "projects-registry.yml"),
+const projectsResult = updateRegistry(
+  path.join(__dirname, "_data/projects"),
+  path.join(__dirname, "_data/projects-registry.yml"),
   "projects"
 );
 
-console.log("Registry update complete!");
+// Update services registry
+const servicesResult = updateRegistry(
+  path.join(__dirname, "_data/services"),
+  path.join(__dirname, "_data/services-registry.yml"),
+  "services"
+);
+
+// Summary
+console.log("\n📈 SUMMARY:");
+if (projectsResult) {
+  console.log(
+    `   Projects: ${projectsResult.total} files (${projectsResult.added} added, ${projectsResult.removed} removed)`
+  );
+}
+if (servicesResult) {
+  console.log(
+    `   Services: ${servicesResult.total} files (${servicesResult.added} added, ${servicesResult.removed} removed)`
+  );
+}
+
+console.log("\n✨ Registry update complete!");
+console.log(
+  "💡 TIP: Run this script whenever you add/remove .yml files to keep registries in sync."
+);

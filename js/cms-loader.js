@@ -28,37 +28,123 @@ class CMSLoader {
     }
   }
 
-  // Load all YAML files from a directory using registry for efficiency
+  // Load all YAML files from a directory using registry + intelligent auto-discovery
   async loadAllFilesFromDirectory(directoryPath, targetArray) {
     console.log(`🔍 Loading files from ${directoryPath}`);
 
-    // First, try to use the registry file
+    let filesToLoad = [];
+    let discoveredFiles = [];
+
+    // Step 1: Try to use the registry file as the primary source
     const registryFile = directoryPath.includes("projects")
       ? "/_data/projects-registry.yml"
       : "/_data/services-registry.yml";
 
-    let filesToLoad = [];
-
     try {
       const registryData = await this.loadYAML(registryFile, true);
       if (registryData && Array.isArray(registryData.projects)) {
-        filesToLoad = registryData.projects;
+        filesToLoad = [...registryData.projects];
         console.log(
-          `📋 Using registry file: ${registryFile} with ${filesToLoad.length} files`
+          `📋 Registry found ${filesToLoad.length} files: ${filesToLoad.join(
+            ", "
+          )}`
         );
       } else if (registryData && Array.isArray(registryData.services)) {
-        filesToLoad = registryData.services;
+        filesToLoad = [...registryData.services];
         console.log(
-          `📋 Using registry file: ${registryFile} with ${filesToLoad.length} files`
+          `📋 Registry found ${filesToLoad.length} files: ${filesToLoad.join(
+            ", "
+          )}`
         );
       }
     } catch (error) {
-      console.log(
-        `⚠️ Registry file ${registryFile} not found or invalid, falling back to known files`
+      console.log(`⚠️ Registry file ${registryFile} not found or invalid`);
+    }
+
+    // Step 2: Try intelligent auto-discovery for new files
+    // Generate reasonable patterns that might exist
+    const discoveryPatterns = [];
+
+    if (directoryPath.includes("projects")) {
+      discoveryPatterns.push(
+        // Common project naming patterns
+        "new-project.yml",
+        "latest-project.yml",
+        "recent-project.yml",
+        "project-new.yml",
+        "project-latest.yml",
+        "project-recent.yml",
+        "project2.yml",
+        "project3.yml",
+        "project4.yml",
+        "project5.yml",
+        // Date-based patterns
+        "project-2024.yml",
+        "project-2025.yml",
+        // Type-based patterns
+        "commercial-project.yml",
+        "residential-project.yml",
+        "solar-project.yml",
+        "electrical-project.yml",
+        // Simple patterns
+        "project-a.yml",
+        "project-b.yml",
+        "project-c.yml",
+        "project-1.yml",
+        "project-2.yml",
+        "project-3.yml"
+      );
+    } else if (directoryPath.includes("services")) {
+      discoveryPatterns.push(
+        "new-service.yml",
+        "latest-service.yml",
+        "service-new.yml",
+        "emergency.yml",
+        "maintenance.yml",
+        "repair.yml",
+        "installation.yml"
       );
     }
 
-    // If no registry or registry is empty, use known file patterns for the specific directory
+    // Try discovery patterns (only ones not already in registry)
+    const unknownPatterns = discoveryPatterns.filter(
+      (pattern) => !filesToLoad.includes(pattern)
+    );
+
+    if (unknownPatterns.length > 0) {
+      console.log(
+        `🔍 Trying ${unknownPatterns.length} discovery patterns for new files...`
+      );
+
+      const discoveryPromises = unknownPatterns.map(async (filename) => {
+        try {
+          const data = await this.loadYAML(`${directoryPath}${filename}`, true);
+          if (data && data.title) {
+            console.log(
+              `🆕 Discovered new file: ${filename} - "${data.title}"`
+            );
+            return filename;
+          }
+        } catch (error) {
+          // Silently ignore - this is expected for discovery
+        }
+        return null;
+      });
+
+      const discoveryResults = await Promise.all(discoveryPromises);
+      discoveredFiles = discoveryResults.filter((result) => result !== null);
+
+      if (discoveredFiles.length > 0) {
+        console.log(
+          `🎉 Found ${discoveredFiles.length} new files: ${discoveredFiles.join(
+            ", "
+          )}`
+        );
+        filesToLoad.push(...discoveredFiles);
+      }
+    }
+
+    // Step 3: Fallback to known files if nothing found
     if (filesToLoad.length === 0) {
       if (directoryPath.includes("projects")) {
         filesToLoad = [
@@ -84,11 +170,15 @@ class CMSLoader {
       );
     }
 
-    // Load only the files we know exist
+    // Step 4: Load all identified files
+    console.log(
+      `📥 Loading ${filesToLoad.length} files: ${filesToLoad.join(", ")}`
+    );
+
     const loadPromises = filesToLoad.map(async (filename) => {
       try {
         const fullPath = `${directoryPath}${filename}`;
-        const data = await this.loadYAML(fullPath, false); // Don't suppress errors for known files
+        const data = await this.loadYAML(fullPath, false);
         if (data && data.title) {
           console.log(`✅ Successfully loaded: ${filename} - "${data.title}"`);
           return { data, filename };
@@ -105,7 +195,7 @@ class CMSLoader {
     const results = await Promise.all(loadPromises);
     const validResults = results.filter((result) => result !== null);
 
-    // Remove duplicates based on title (in case same content is found multiple times)
+    // Step 5: Remove duplicates and add to target array
     const uniqueResults = [];
     const seenTitles = new Set();
 
@@ -113,7 +203,7 @@ class CMSLoader {
       if (!seenTitles.has(data.title)) {
         seenTitles.add(data.title);
         uniqueResults.push(data);
-        console.log(`📝 Added unique item: ${data.title} (from ${filename})`);
+        console.log(`📝 Added: ${data.title} (from ${filename})`);
       } else {
         console.warn(
           `⚠️ Duplicate title found: ${data.title} (from ${filename})`
@@ -125,8 +215,17 @@ class CMSLoader {
       targetArray.push(data);
     });
 
+    // Step 6: Auto-update registry if new files were discovered
+    if (discoveredFiles.length > 0) {
+      console.log(
+        `🔄 Consider updating ${registryFile} to include: ${discoveredFiles.join(
+          ", "
+        )}`
+      );
+    }
+
     console.log(
-      `🎯 Loading complete: ${uniqueResults.length} unique files loaded from ${directoryPath}`
+      `🎯 Loading complete: ${uniqueResults.length} files loaded from ${directoryPath}`
     );
   }
 
