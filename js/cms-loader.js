@@ -390,6 +390,13 @@ class CMSLoader {
       console.warn("No hero data available");
     }
 
+    // Show the hero section now that content is loaded
+    const heroSection = document.querySelector(".hero");
+    if (heroSection) {
+      heroSection.classList.add("loaded");
+      console.log("✅ Hero section made visible");
+    }
+
     // Update about section
     if (this.aboutData) {
       console.log("Applying about data:", this.aboutData);
@@ -478,6 +485,13 @@ class CMSLoader {
       }
     } else {
       console.warn("No about data available, using hardcoded content");
+    }
+
+    // Show the about section now that content is loaded
+    const aboutSection = document.querySelector(".about");
+    if (aboutSection) {
+      aboutSection.classList.add("loaded");
+      console.log("✅ About section made visible");
     }
 
     // Update projects section

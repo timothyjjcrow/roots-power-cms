@@ -313,6 +313,13 @@ img {
   z-index: 1;
   contain: layout style paint;
   will-change: auto;
+  /* Hide initially to prevent flash of old content */
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.hero.loaded {
+  opacity: 1;
 }
 
 .hero-background {
@@ -697,6 +704,13 @@ img {
   background: var(--bg-primary);
   position: relative;
   z-index: 2;
+  /* Hide initially to prevent flash of old content */
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.about.loaded {
+  opacity: 1;
 }
 
 .about-content {
