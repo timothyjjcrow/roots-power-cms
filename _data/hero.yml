@@ -1,15 +1,16 @@
-badge: "Licensed & Insured • CSLB Lic.# 901433"
-title: "Roots Power Expert Electrical Solutions"
-description: "Professional electrical services for residential and commercial projects in the greater Eureka area. Led by RJ Satava with 20+ years of experience and teaching expertise at College of the Redwoods."
-primary_button_text: "Schedule Consultation"
+badge: Licensed & Insured • CSLB Lic.# 901433
+title: Roots Power Expert Electrical Solutions
+description: Professional electrical services for residential and commercial
+  projects in the greater Eureka area. Led by RJ Satava with 20+ years of
+  experience and teaching expertise at College of the Redwoods.
+primary_button_text: Contact us
 primary_button_link: "#contact"
-secondary_button_text: "(707) 441-9436"
-secondary_button_link: "tel:7074419436"
-
+secondary_button_text: (707) 441-9436
+secondary_button_link: tel:7074419436
 features:
-  - icon: "fas fa-certificate"
-    text: "Licensed & Bonded"
-  - icon: "fas fa-clock"
-    text: "24/7 Emergency"
-  - icon: "fas fa-star"
-    text: "20+ Years Experience"
+  - icon: fas fa-certificate
+    text: Licensed & Bonded
+  - icon: fas fa-clock
+    text: 24/7 Emergency
+  - icon: fas fa-star
+    text: 20+ Years Experience
