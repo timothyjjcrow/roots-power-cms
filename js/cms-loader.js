@@ -11,7 +11,7 @@ class CMSLoader {
   }
 
   // Load YAML content
-  async loadYAML(url) {
+  async loadYAML(url, suppressErrors = false) {
     try {
       const response = await fetch(url);
       if (!response.ok) {
@@ -21,257 +21,85 @@ class CMSLoader {
       // Use proper js-yaml library for accurate parsing of multi-line strings
       return jsyaml.load(text);
     } catch (error) {
-      console.warn(`Could not load ${url}, using fallback content:`, error);
+      if (!suppressErrors) {
+        console.warn(`Could not load ${url}, using fallback content:`, error);
+      }
       return null;
     }
   }
 
   // Load all YAML files from a directory using registry for efficiency
   async loadAllFilesFromDirectory(directoryPath, targetArray) {
-    console.log(`🔍 Auto-discovering files in ${directoryPath}`);
+    console.log(`🔍 Loading files from ${directoryPath}`);
 
-    // Auto-discovery approach: try to load common file patterns
-    const commonPatterns = [];
+    // First, try to use the registry file
+    const registryFile = directoryPath.includes("projects")
+      ? "/_data/projects-registry.yml"
+      : "/_data/services-registry.yml";
 
-    if (directoryPath.includes("services")) {
-      // Generate comprehensive service file patterns
-      const serviceTypes = [
-        "residential",
-        "commercial",
-        "industrial",
-        "solar",
-        "generator",
-        "emergency",
-        "emergency-services",
-        "maintenance",
-        "lighting",
-        "smart-home",
-        "underground",
-        "electrical",
-        "repair",
-        "installation",
-        "hvac",
-        "plumbing",
-        "automation",
-        "security",
-        "backup",
-        "panel",
-        "wiring",
-        "outlet",
-        "switch",
-        "circuit",
-        "breaker",
-        "inspection",
-        "troubleshooting",
-        "upgrade",
-        "retrofit",
-        "code",
-        "permit",
-        "consultation",
-        "design",
-        "planning",
-        "24-7",
-        "emergency-repair",
-        "service-call",
-        "electrical-service",
-        "power",
-        "energy",
-        "led",
-        "fixture",
-        "ceiling-fan",
-      ];
+    let filesToLoad = [];
 
-      serviceTypes.forEach((type) => {
-        commonPatterns.push(`${type}.yml`);
-        commonPatterns.push(`${type}-service.yml`);
-        commonPatterns.push(`${type}-services.yml`);
-      });
-
-      // Add common variations and abbreviations
-      const variations = ["elec", "elect", "electric", "power", "energy"];
-      variations.forEach((variation) => {
-        commonPatterns.push(`${variation}.yml`);
-        commonPatterns.push(`${variation}-service.yml`);
-        commonPatterns.push(`${variation}-services.yml`);
-      });
-    } else if (directoryPath.includes("projects")) {
-      // Generate comprehensive project file patterns
-      const projectTypes = [
-        "coastal-commercial",
-        "residential-upgrade",
-        "solar-installation",
-        "commercial",
-        "residential",
-        "industrial",
-        "office",
-        "retail",
-        "warehouse",
-        "factory",
-        "home",
-        "apartment",
-        "condo",
-        "school",
-        "hospital",
-        "hotel",
-        "restaurant",
-        "church",
-        "government",
-        "medical",
-        "dental",
-        "veterinary",
-        "automotive",
-        "manufacturing",
-        "tech",
-        "startup",
-        "nonprofit",
-        "community",
-        "municipal",
-        "federal",
-        "state",
-        "county",
-        "city",
-        "township",
-        "district",
-        "authority",
-        "agency",
-        "department",
-      ];
-
-      projectTypes.forEach((type) => {
-        commonPatterns.push(`${type}.yml`);
-        commonPatterns.push(`${type}-project.yml`);
-      });
-
-      // Add numbered variations (project1, project2, etc.)
-      for (let i = 1; i <= 20; i++) {
-        commonPatterns.push(`project${i}.yml`);
-        commonPatterns.push(`project-${i}.yml`);
+    try {
+      const registryData = await this.loadYAML(registryFile, true);
+      if (registryData && Array.isArray(registryData.projects)) {
+        filesToLoad = registryData.projects;
+        console.log(
+          `📋 Using registry file: ${registryFile} with ${filesToLoad.length} files`
+        );
+      } else if (registryData && Array.isArray(registryData.services)) {
+        filesToLoad = registryData.services;
+        console.log(
+          `📋 Using registry file: ${registryFile} with ${filesToLoad.length} files`
+        );
       }
+    } catch (error) {
+      console.log(
+        `⚠️ Registry file ${registryFile} not found or invalid, falling back to known files`
+      );
     }
 
-    // Add some generic patterns to catch any other files
-    const genericPatterns = [
-      "a.yml",
-      "b.yml",
-      "c.yml",
-      "d.yml",
-      "e.yml",
-      "f.yml",
-      "g.yml",
-      "h.yml",
-      "test.yml",
-      "new.yml",
-      "temp.yml",
-      "draft.yml",
-      "sample.yml",
-      "example.yml",
-      "service.yml",
-      "project.yml",
-      "item.yml",
-      "entry.yml",
-      "content.yml",
-    ];
+    // If no registry or registry is empty, use known file patterns for the specific directory
+    if (filesToLoad.length === 0) {
+      if (directoryPath.includes("projects")) {
+        filesToLoad = [
+          "a-project.yml",
+          "coastal-commercial.yml",
+          "residential-upgrade.yml",
+          "solar-installation.yml",
+        ];
+      } else if (directoryPath.includes("services")) {
+        filesToLoad = [
+          "residential.yml",
+          "commercial.yml",
+          "industrial.yml",
+          "solar.yml",
+          "generator.yml",
+          "lighting.yml",
+          "smart-home.yml",
+          "underground.yml",
+        ];
+      }
+      console.log(
+        `🔧 Using fallback file list with ${filesToLoad.length} files`
+      );
+    }
 
-    // Add hyphenated and compound word patterns for custom names
-    const compoundPatterns = [];
-    const words = [
-      "big",
-      "small",
-      "new",
-      "old",
-      "main",
-      "primary",
-      "secondary",
-      "first",
-      "second",
-      "third",
-      "best",
-      "top",
-      "special",
-      "custom",
-      "dub",
-      "hub",
-      "lab",
-      "pro",
-      "max",
-      "plus",
-      "super",
-      "ultra",
-      "mega",
-      "mini",
-      "micro",
-      "nano",
-      "eco",
-      "green",
-      "blue",
-      "red",
-    ];
-
-    words.forEach((word1) => {
-      words.forEach((word2) => {
-        if (word1 !== word2) {
-          compoundPatterns.push(`${word1}-${word2}.yml`);
-          compoundPatterns.push(`${word1}${word2}.yml`);
-        }
-      });
-    });
-
-    // Add single letter combinations with common suffixes
-    const letters = [
-      "a",
-      "b",
-      "c",
-      "d",
-      "e",
-      "f",
-      "g",
-      "h",
-      "i",
-      "j",
-      "k",
-      "l",
-      "m",
-      "n",
-      "o",
-      "p",
-      "q",
-      "r",
-      "s",
-      "t",
-      "u",
-      "v",
-      "w",
-      "x",
-      "y",
-      "z",
-    ];
-    const suffixes = directoryPath.includes("projects")
-      ? ["-project", "-proj"]
-      : ["-service", "-serv"];
-
-    letters.forEach((letter) => {
-      suffixes.forEach((suffix) => {
-        compoundPatterns.push(`${letter}${suffix}.yml`);
-      });
-    });
-
-    commonPatterns.push(...genericPatterns, ...compoundPatterns.slice(0, 150)); // Increased limit to include new patterns
-
-    console.log(`🔍 Trying ${commonPatterns.length} potential file patterns`);
-
-    // Load all potential files in parallel
-    const loadPromises = commonPatterns.map(async (filename) => {
+    // Load only the files we know exist
+    const loadPromises = filesToLoad.map(async (filename) => {
       try {
-        const data = await this.loadYAML(`${directoryPath}${filename}`);
+        const fullPath = `${directoryPath}${filename}`;
+        const data = await this.loadYAML(fullPath, false); // Don't suppress errors for known files
         if (data && data.title) {
-          // Ensure it's a valid service/project with a title
-          console.log(`✅ Found and loaded: ${filename}`);
+          console.log(`✅ Successfully loaded: ${filename} - "${data.title}"`);
           return { data, filename };
+        } else {
+          console.warn(`⚠️ File ${filename} loaded but missing title field`);
+          return null;
         }
       } catch (error) {
-        // Silently ignore missing files - this is expected
+        console.error(`❌ Failed to load ${filename}:`, error.message);
+        return null;
       }
-      return null;
     });
 
     const results = await Promise.all(loadPromises);
@@ -286,6 +114,10 @@ class CMSLoader {
         seenTitles.add(data.title);
         uniqueResults.push(data);
         console.log(`📝 Added unique item: ${data.title} (from ${filename})`);
+      } else {
+        console.warn(
+          `⚠️ Duplicate title found: ${data.title} (from ${filename})`
+        );
       }
     });
 
@@ -294,7 +126,7 @@ class CMSLoader {
     });
 
     console.log(
-      `🎯 Auto-discovery complete: ${uniqueResults.length} unique files loaded from ${directoryPath}`
+      `🎯 Loading complete: ${uniqueResults.length} unique files loaded from ${directoryPath}`
     );
   }
 
@@ -847,6 +679,15 @@ class CMSLoader {
     if (projectsSection) {
       projectsSection.classList.add("loaded");
       console.log("✅ Projects section made visible");
+
+      // Add a visual indicator that CMS content was loaded
+      const timestamp = new Date().toLocaleTimeString();
+      const indicator = document.createElement("div");
+      indicator.style.cssText =
+        "position: fixed; top: 10px; right: 10px; background: #4CAF50; color: white; padding: 5px 10px; border-radius: 4px; font-size: 12px; z-index: 9999;";
+      indicator.textContent = `CMS Updated: ${timestamp}`;
+      document.body.appendChild(indicator);
+      setTimeout(() => indicator.remove(), 3000);
     }
 
     console.log("CMS content applied successfully");
