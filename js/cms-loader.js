@@ -216,7 +216,46 @@ class CMSLoader {
       });
     });
 
-    commonPatterns.push(...genericPatterns, ...compoundPatterns.slice(0, 100)); // Limit to avoid too many requests
+    // Add single letter combinations with common suffixes
+    const letters = [
+      "a",
+      "b",
+      "c",
+      "d",
+      "e",
+      "f",
+      "g",
+      "h",
+      "i",
+      "j",
+      "k",
+      "l",
+      "m",
+      "n",
+      "o",
+      "p",
+      "q",
+      "r",
+      "s",
+      "t",
+      "u",
+      "v",
+      "w",
+      "x",
+      "y",
+      "z",
+    ];
+    const suffixes = directoryPath.includes("projects")
+      ? ["-project", "-proj"]
+      : ["-service", "-serv"];
+
+    letters.forEach((letter) => {
+      suffixes.forEach((suffix) => {
+        compoundPatterns.push(`${letter}${suffix}.yml`);
+      });
+    });
+
+    commonPatterns.push(...genericPatterns, ...compoundPatterns.slice(0, 150)); // Increased limit to include new patterns
 
     console.log(`🔍 Trying ${commonPatterns.length} potential file patterns`);
 
