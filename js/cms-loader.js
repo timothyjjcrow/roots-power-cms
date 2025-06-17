@@ -411,7 +411,15 @@ class CMSLoader {
       );
       // Sort projects by order
       this.projectsData.sort((a, b) => (a.order || 999) - (b.order || 999));
-      console.log("Loaded projects data:", this.projectsData);
+      console.log("🔍 DEBUG: Loaded projects data:", this.projectsData);
+      console.log("🔍 DEBUG: Projects count:", this.projectsData.length);
+      this.projectsData.forEach((project, index) => {
+        console.log(
+          `🔍 DEBUG: Project ${index + 1}:`,
+          project.title,
+          project.description
+        );
+      });
 
       // Apply content to page
       this.applyContent();
@@ -766,6 +774,12 @@ class CMSLoader {
     }
 
     // Update projects content (only if we have valid data)
+    console.log("🔍 DEBUG: Checking projects data for content update...");
+    console.log("🔍 DEBUG: this.projectsData exists:", !!this.projectsData);
+    console.log(
+      "🔍 DEBUG: this.projectsData.length:",
+      this.projectsData ? this.projectsData.length : "N/A"
+    );
     if (this.projectsData && this.projectsData.length > 0) {
       const projectsGrid = document.querySelector(".projects-grid");
       if (projectsGrid) {
