@@ -71,8 +71,28 @@ But you should never need to do this - it's fully automatic now!
 
 If a service/project isn't showing up:
 
+### 🔧 **Quick Fix** (Recommended)
+
+Run this command in your project folder:
+
+```bash
+node fix-registry.js
+```
+
+This will automatically update the registries and push the changes.
+
+### 📋 **Manual Steps** (If needed)
+
 1. **Check the title**: Make sure your YAML file has a `title:` field
 2. **Wait a moment**: GitHub Action takes 1-2 minutes to run
-3. **Check browser console**: Look for discovery logs with 🔍 and ✅ emojis
+3. **Manual registry update**: Run `node update-registry.js`
+4. **Commit changes**: `git add _data/*-registry.yml && git commit -m "Update registries" && git push`
+5. **Check browser console**: Look for discovery logs with 🔍 and ✅ emojis
+
+### 🎯 **Why This Happens**
+
+- GitHub Actions might not be enabled for your repository
+- Sometimes the automatic trigger doesn't work
+- The fix script solves this by manually updating the registries
 
 The system is designed to find your content no matter what you name it! 🚀
