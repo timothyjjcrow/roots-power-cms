@@ -1,5 +1,6 @@
 services:
   - commercial.yml
+  - emergency-services.yml
   - generator.yml
   - industrial.yml
   - lighting.yml
