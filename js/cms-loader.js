@@ -171,7 +171,52 @@ class CMSLoader {
       "entry.yml",
       "content.yml",
     ];
-    commonPatterns.push(...genericPatterns);
+
+    // Add hyphenated and compound word patterns for custom names
+    const compoundPatterns = [];
+    const words = [
+      "big",
+      "small",
+      "new",
+      "old",
+      "main",
+      "primary",
+      "secondary",
+      "first",
+      "second",
+      "third",
+      "best",
+      "top",
+      "special",
+      "custom",
+      "dub",
+      "hub",
+      "lab",
+      "pro",
+      "max",
+      "plus",
+      "super",
+      "ultra",
+      "mega",
+      "mini",
+      "micro",
+      "nano",
+      "eco",
+      "green",
+      "blue",
+      "red",
+    ];
+
+    words.forEach((word1) => {
+      words.forEach((word2) => {
+        if (word1 !== word2) {
+          compoundPatterns.push(`${word1}-${word2}.yml`);
+          compoundPatterns.push(`${word1}${word2}.yml`);
+        }
+      });
+    });
+
+    commonPatterns.push(...genericPatterns, ...compoundPatterns.slice(0, 100)); // Limit to avoid too many requests
 
     console.log(`🔍 Trying ${commonPatterns.length} potential file patterns`);
 
