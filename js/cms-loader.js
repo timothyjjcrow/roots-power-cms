@@ -231,6 +231,7 @@ class CMSLoader {
       );
       // Sort projects by order
       this.projectsData.sort((a, b) => (a.order || 999) - (b.order || 999));
+      console.log("Loaded projects data:", this.projectsData);
 
       // Apply content to page
       this.applyContent();
@@ -563,43 +564,58 @@ class CMSLoader {
       }
     }
 
-    // Update projects content
+    // Update projects content (only if we have valid data)
     if (this.projectsData && this.projectsData.length > 0) {
       const projectsGrid = document.querySelector(".projects-grid");
       if (projectsGrid) {
-        projectsGrid.innerHTML = "";
-        this.projectsData.forEach((project) => {
-          const projectCard = document.createElement("div");
-          projectCard.className = "project-card";
+        // Only clear if we have valid projects to replace with
+        const validProjects = this.projectsData.filter(
+          (project) => project && project.title && project.description
+        );
+        if (validProjects.length > 0) {
+          console.log("Loading projects from CMS:", validProjects);
+          projectsGrid.innerHTML = "";
+          validProjects.forEach((project) => {
+            const projectCard = document.createElement("div");
+            projectCard.className = "project-card";
 
-          const tagsHtml =
-            project.tags && Array.isArray(project.tags)
-              ? project.tags
-                  .map((tag) => `<span class="tag">${tag}</span>`)
-                  .join("")
-              : "";
+            const tagsHtml =
+              project.tags && Array.isArray(project.tags)
+                ? project.tags
+                    .map((tag) => `<span class="tag">${tag}</span>`)
+                    .join("")
+                : "";
 
-          projectCard.innerHTML = `
-            <div class="project-image">
-              <img
-                src="${project.image || "./service images/placeholder.jpg"}"
-                alt="${project.title || "Project Image"}"
-                loading="lazy"
-              />
-              <div class="project-overlay">
-                <div class="project-tags">
-                  ${tagsHtml}
+            projectCard.innerHTML = `
+              <div class="project-image">
+                <img
+                  src="${project.image || "./service images/placeholder.jpg"}"
+                  alt="${project.title || "Project Image"}"
+                  loading="lazy"
+                />
+                <div class="project-overlay">
+                  <div class="project-tags">
+                    ${tagsHtml}
+                  </div>
                 </div>
               </div>
-            </div>
-            <div class="project-content">
-              <h3>${project.title || "Untitled Project"}</h3>
-              <p>${project.description || "No description available."}</p>
-            </div>
-          `;
-          projectsGrid.appendChild(projectCard);
-        });
+              <div class="project-content">
+                <h3>${project.title || "Untitled Project"}</h3>
+                <p>${project.description || "No description available."}</p>
+              </div>
+            `;
+            projectsGrid.appendChild(projectCard);
+            console.log("Added project:", project.title);
+          });
+          console.log("Updated projects with CMS data");
+        } else {
+          console.warn("No valid projects found, keeping hardcoded projects");
+        }
+      } else {
+        console.warn("Projects grid not found");
       }
+    } else {
+      console.warn("No projects data available, using hardcoded content");
     }
 
     console.log("CMS content applied successfully");
