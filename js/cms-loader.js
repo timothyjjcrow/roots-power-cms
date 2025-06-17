@@ -28,93 +28,190 @@ class CMSLoader {
 
   // Load all YAML files from a directory using registry for efficiency
   async loadAllFilesFromDirectory(directoryPath, targetArray) {
-    let registryFile = "";
+    console.log(`🔍 Auto-discovering files in ${directoryPath}`);
+
+    // Auto-discovery approach: try to load common file patterns
+    const commonPatterns = [];
+
     if (directoryPath.includes("services")) {
-      registryFile = "/_data/services-registry.yml";
+      // Generate comprehensive service file patterns
+      const serviceTypes = [
+        "residential",
+        "commercial",
+        "industrial",
+        "solar",
+        "generator",
+        "emergency",
+        "emergency-services",
+        "maintenance",
+        "lighting",
+        "smart-home",
+        "underground",
+        "electrical",
+        "repair",
+        "installation",
+        "hvac",
+        "plumbing",
+        "automation",
+        "security",
+        "backup",
+        "panel",
+        "wiring",
+        "outlet",
+        "switch",
+        "circuit",
+        "breaker",
+        "inspection",
+        "troubleshooting",
+        "upgrade",
+        "retrofit",
+        "code",
+        "permit",
+        "consultation",
+        "design",
+        "planning",
+        "24-7",
+        "emergency-repair",
+        "service-call",
+        "electrical-service",
+        "power",
+        "energy",
+        "led",
+        "fixture",
+        "ceiling-fan",
+      ];
+
+      serviceTypes.forEach((type) => {
+        commonPatterns.push(`${type}.yml`);
+        commonPatterns.push(`${type}-service.yml`);
+        commonPatterns.push(`${type}-services.yml`);
+      });
+
+      // Add common variations and abbreviations
+      const variations = ["elec", "elect", "electric", "power", "energy"];
+      variations.forEach((variation) => {
+        commonPatterns.push(`${variation}.yml`);
+        commonPatterns.push(`${variation}-service.yml`);
+        commonPatterns.push(`${variation}-services.yml`);
+      });
     } else if (directoryPath.includes("projects")) {
-      registryFile = "/_data/projects-registry.yml";
-    }
+      // Generate comprehensive project file patterns
+      const projectTypes = [
+        "coastal-commercial",
+        "residential-upgrade",
+        "solar-installation",
+        "commercial",
+        "residential",
+        "industrial",
+        "office",
+        "retail",
+        "warehouse",
+        "factory",
+        "home",
+        "apartment",
+        "condo",
+        "school",
+        "hospital",
+        "hotel",
+        "restaurant",
+        "church",
+        "government",
+        "medical",
+        "dental",
+        "veterinary",
+        "automotive",
+        "manufacturing",
+        "tech",
+        "startup",
+        "nonprofit",
+        "community",
+        "municipal",
+        "federal",
+        "state",
+        "county",
+        "city",
+        "township",
+        "district",
+        "authority",
+        "agency",
+        "department",
+      ];
 
-    // Try to load from registry first (fast approach)
-    if (registryFile) {
-      try {
-        const registry = await this.loadYAML(registryFile);
-        if (registry) {
-          const fileList = directoryPath.includes("services")
-            ? registry.services
-            : registry.projects;
-          if (fileList && Array.isArray(fileList)) {
-            console.log(`Loading ${fileList.length} files from registry`);
+      projectTypes.forEach((type) => {
+        commonPatterns.push(`${type}.yml`);
+        commonPatterns.push(`${type}-project.yml`);
+      });
 
-            // Load all files in parallel for maximum speed
-            const loadPromises = fileList.map(async (filename) => {
-              try {
-                const data = await this.loadYAML(`${directoryPath}${filename}`);
-                if (data) {
-                  return data;
-                }
-              } catch (error) {
-                console.debug(`Could not load ${filename}:`, error);
-              }
-              return null;
-            });
-
-            const results = await Promise.all(loadPromises);
-            results.forEach((data) => {
-              if (data) {
-                targetArray.push(data);
-              }
-            });
-
-            return; // Exit early if registry worked
-          }
-        }
-      } catch (error) {
-        console.debug(
-          "Registry not available, falling back to discovery:",
-          error
-        );
+      // Add numbered variations (project1, project2, etc.)
+      for (let i = 1; i <= 20; i++) {
+        commonPatterns.push(`project${i}.yml`);
+        commonPatterns.push(`project-${i}.yml`);
       }
     }
 
-    // Fallback: Load known files only (no slow discovery)
-    const fallbackFiles = directoryPath.includes("services")
-      ? [
-          "residential.yml",
-          "commercial.yml",
-          "solar.yml",
-          "underground.yml",
-          "generator.yml",
-          "emergency-services.yml",
-          "industrial.yml",
-          "lighting.yml",
-          "smart-home.yml",
-        ]
-      : [
-          "coastal-commercial.yml",
-          "residential-upgrade.yml",
-          "solar-installation.yml",
-        ];
+    // Add some generic patterns to catch any other files
+    const genericPatterns = [
+      "a.yml",
+      "b.yml",
+      "c.yml",
+      "d.yml",
+      "e.yml",
+      "f.yml",
+      "g.yml",
+      "h.yml",
+      "test.yml",
+      "new.yml",
+      "temp.yml",
+      "draft.yml",
+      "sample.yml",
+      "example.yml",
+      "service.yml",
+      "project.yml",
+      "item.yml",
+      "entry.yml",
+      "content.yml",
+    ];
+    commonPatterns.push(...genericPatterns);
 
-    console.log("Using fallback file loading");
-    const loadPromises = fallbackFiles.map(async (filename) => {
+    console.log(`🔍 Trying ${commonPatterns.length} potential file patterns`);
+
+    // Load all potential files in parallel
+    const loadPromises = commonPatterns.map(async (filename) => {
       try {
         const data = await this.loadYAML(`${directoryPath}${filename}`);
-        if (data) {
-          return data;
+        if (data && data.title) {
+          // Ensure it's a valid service/project with a title
+          console.log(`✅ Found and loaded: ${filename}`);
+          return { data, filename };
         }
       } catch (error) {
-        console.debug(`Fallback: Could not load ${filename}:`, error);
+        // Silently ignore missing files - this is expected
       }
       return null;
     });
 
     const results = await Promise.all(loadPromises);
-    results.forEach((data) => {
-      if (data) {
-        targetArray.push(data);
+    const validResults = results.filter((result) => result !== null);
+
+    // Remove duplicates based on title (in case same content is found multiple times)
+    const uniqueResults = [];
+    const seenTitles = new Set();
+
+    validResults.forEach(({ data, filename }) => {
+      if (!seenTitles.has(data.title)) {
+        seenTitles.add(data.title);
+        uniqueResults.push(data);
+        console.log(`📝 Added unique item: ${data.title} (from ${filename})`);
       }
     });
+
+    uniqueResults.forEach((data) => {
+      targetArray.push(data);
+    });
+
+    console.log(
+      `🎯 Auto-discovery complete: ${uniqueResults.length} unique files loaded from ${directoryPath}`
+    );
   }
 
   // Simple YAML parser for our basic structure
