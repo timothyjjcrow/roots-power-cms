@@ -6,57 +6,6 @@ media_folder: "images/uploads"
 public_folder: "/images/uploads"
 
 collections:
-  # Site Settings
-  - name: "site_settings"
-    label: "Site Settings"
-    files:
-      - label: "Site Information"
-        name: "site"
-        file: "_data/site.yml"
-        fields:
-          - { label: "Site Title", name: "title", widget: "string" }
-          - { label: "Description", name: "description", widget: "text" }
-          - { label: "Site URL", name: "url", widget: "string" }
-          - { label: "Phone", name: "phone", widget: "string" }
-          - { label: "Email", name: "email", widget: "string" }
-          - { label: "License", name: "license", widget: "string" }
-          - label: "Address"
-            name: "address"
-            widget: "object"
-            fields:
-              - { label: "Street", name: "street", widget: "string" }
-              - { label: "City", name: "city", widget: "string" }
-              - { label: "State", name: "state", widget: "string" }
-              - { label: "Zip", name: "zip", widget: "string" }
-          - label: "Social Media"
-            name: "social"
-            widget: "object"
-            fields:
-              - {
-                  label: "Facebook",
-                  name: "facebook",
-                  widget: "string",
-                  required: false,
-                }
-              - {
-                  label: "Instagram",
-                  name: "instagram",
-                  widget: "string",
-                  required: false,
-                }
-              - {
-                  label: "LinkedIn",
-                  name: "linkedin",
-                  widget: "string",
-                  required: false,
-                }
-              - {
-                  label: "Twitter",
-                  name: "twitter",
-                  widget: "string",
-                  required: false,
-                }
-
   # Hero Section
   - name: "hero_section"
     label: "Hero Section"
