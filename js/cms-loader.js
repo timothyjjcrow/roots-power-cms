@@ -30,27 +30,21 @@ class CMSLoader {
 
   // Load all YAML files from a directory using registry + comprehensive auto-discovery
   async loadAllFilesFromDirectory(directoryPath, targetArray) {
-    console.log(`🔍 Loading files from ${directoryPath}`);
-
+    const discoveredFiles = [];
     let filesToLoad = [];
-    let discoveredFiles = [];
 
-    // Step 1: Try to use the registry file as the primary source
+    // Step 1: Try to load registry first
     const registryFile = directoryPath.includes("projects")
       ? "/_data/projects-registry.yml"
       : "/_data/services-registry.yml";
+    const arrayKey = directoryPath.includes("projects")
+      ? "projects"
+      : "services";
 
     try {
       const registryData = await this.loadYAML(registryFile, true);
-      if (registryData && Array.isArray(registryData.projects)) {
-        filesToLoad = [...registryData.projects];
-        console.log(
-          `📋 Registry found ${filesToLoad.length} files: ${filesToLoad.join(
-            ", "
-          )}`
-        );
-      } else if (registryData && Array.isArray(registryData.services)) {
-        filesToLoad = [...registryData.services];
+      if (registryData && Array.isArray(registryData[arrayKey])) {
+        filesToLoad = [...registryData[arrayKey]];
         console.log(
           `📋 Registry found ${filesToLoad.length} files: ${filesToLoad.join(
             ", "
@@ -58,207 +52,27 @@ class CMSLoader {
         );
       }
     } catch (error) {
-      console.log(`⚠️ Registry file ${registryFile} not found or invalid`);
+      console.log(`📄 Registry not found, will use direct discovery`);
     }
 
-    // Step 2: Comprehensive auto-discovery system
-    // Generate extensive patterns to catch ANY reasonable filename
-    const discoveryPatterns = [];
+    // Step 2: Direct directory scanning - try common filenames to discover what exists
+    console.log(`🔍 Scanning directory for all .yml files...`);
 
-    if (directoryPath.includes("projects")) {
-      // Generate comprehensive patterns for projects
-      const words = [
-        "new",
-        "latest",
-        "recent",
-        "big",
-        "small",
-        "main",
-        "test",
-        "demo",
-        "sample",
-        "project",
-        "work",
-        "job",
-        "task",
-        "build",
-        "site",
-        "home",
-        "office",
-        "shop",
-        "commercial",
-        "residential",
-        "industrial",
-        "solar",
-        "electrical",
-        "power",
-        "lighting",
-        "wiring",
-        "panel",
-        "upgrade",
-        "install",
-        "repair",
-        "service",
-        "first",
-        "second",
-        "third",
-        "fourth",
-        "fifth",
-        "final",
-        "temp",
-        "draft",
-      ];
+    // Generate a comprehensive list of potential filenames to test
+    const potentialFiles = this.generateAllPossibleFilenames();
 
-      // Single words
-      words.forEach((word) => {
-        discoveryPatterns.push(`${word}.yml`);
-      });
-
-      // Word combinations
-      words.slice(0, 15).forEach((word1) => {
-        words.slice(0, 15).forEach((word2) => {
-          if (word1 !== word2) {
-            discoveryPatterns.push(`${word1}-${word2}.yml`);
-            discoveryPatterns.push(`${word1}${word2}.yml`);
-          }
-        });
-      });
-
-      // Numbers and letters
-      for (let i = 1; i <= 20; i++) {
-        discoveryPatterns.push(`project${i}.yml`);
-        discoveryPatterns.push(`project-${i}.yml`);
-        discoveryPatterns.push(`${i}.yml`);
-      }
-
-      // Single letters
-      for (let c = 97; c <= 122; c++) {
-        // a-z
-        const letter = String.fromCharCode(c);
-        discoveryPatterns.push(`${letter}.yml`);
-        discoveryPatterns.push(`${letter}-project.yml`);
-        discoveryPatterns.push(`project-${letter}.yml`);
-      }
-
-      // Common patterns
-      discoveryPatterns.push(
-        "the.yml",
-        "my.yml",
-        "our.yml",
-        "this.yml",
-        "that.yml"
-      );
-    } else if (directoryPath.includes("services")) {
-      // Service patterns - comprehensive discovery like projects
-      const words = [
-        "new",
-        "latest",
-        "recent",
-        "big",
-        "main",
-        "demo",
-        "work",
-        "job",
-        "test",
-        "task",
-        "site",
-        "shop",
-        "sample",
-        "office",
-        "commercial",
-        "service",
-        "residential",
-        "home",
-        "small",
-        "build",
-        "emergency",
-        "maintenance",
-        "repair",
-        "installation",
-        "electrical",
-        "power",
-        "lighting",
-        "wiring",
-        "panel",
-        "upgrade",
-        "install",
-        "smart",
-        "solar",
-        "generator",
-        "industrial",
-        "underground",
-        "first",
-        "second",
-        "third",
-        "fourth",
-        "fifth",
-        "final",
-        "temp",
-        "draft",
-      ];
-
-      // Single words
-      words.forEach((word) => {
-        discoveryPatterns.push(`${word}.yml`);
-      });
-
-      // Word combinations
-      words.slice(0, 15).forEach((word1) => {
-        words.slice(0, 15).forEach((word2) => {
-          if (word1 !== word2) {
-            discoveryPatterns.push(`${word1}-${word2}.yml`);
-            discoveryPatterns.push(`${word1}${word2}.yml`);
-          }
-        });
-      });
-
-      // Numbers and letters
-      for (let i = 1; i <= 20; i++) {
-        discoveryPatterns.push(`service${i}.yml`);
-        discoveryPatterns.push(`service-${i}.yml`);
-        discoveryPatterns.push(`${i}.yml`);
-      }
-
-      // Single letters
-      for (let c = 97; c <= 122; c++) {
-        // a-z
-        const letter = String.fromCharCode(c);
-        discoveryPatterns.push(`${letter}.yml`);
-        discoveryPatterns.push(`${letter}-service.yml`);
-        discoveryPatterns.push(`service-${letter}.yml`);
-      }
-
-      // Common patterns
-      discoveryPatterns.push(
-        "the.yml",
-        "my.yml",
-        "our.yml",
-        "this.yml",
-        "that.yml"
-      );
-    }
-
-    // Remove duplicates and filter out already known files
-    const uniquePatterns = [...new Set(discoveryPatterns)];
-    const unknownPatterns = uniquePatterns.filter(
-      (pattern) => !filesToLoad.includes(pattern)
-    );
-
-    console.log(
-      `🔍 Trying ${unknownPatterns.length} discovery patterns for new files...`
-    );
-
-    // Batch discovery in smaller groups to avoid overwhelming the server
-    const batchSize = 20;
+    // Test files in batches to find what actually exists
+    const batchSize = 50;
     const batches = [];
-    for (let i = 0; i < unknownPatterns.length; i += batchSize) {
-      batches.push(unknownPatterns.slice(i, i + batchSize));
+    for (let i = 0; i < potentialFiles.length; i += batchSize) {
+      batches.push(potentialFiles.slice(i, i + batchSize));
     }
 
+    let totalFound = 0;
     for (let batchIndex = 0; batchIndex < batches.length; batchIndex++) {
       const batch = batches[batchIndex];
       console.log(
-        `🔄 Processing discovery batch ${batchIndex + 1}/${batches.length} (${
+        `🔄 Scanning batch ${batchIndex + 1}/${batches.length} (${
           batch.length
         } files)...`
       );
@@ -267,10 +81,7 @@ class CMSLoader {
         try {
           const data = await this.loadYAML(`${directoryPath}${filename}`, true);
           if (data && data.title) {
-            console.log(
-              `🆕 Discovered new file: ${filename} - "${data.title}"`
-            );
-            return filename;
+            return { filename, data };
           }
         } catch (error) {
           // Silently ignore - this is expected for discovery
@@ -280,18 +91,25 @@ class CMSLoader {
 
       const batchResults = await Promise.all(batchPromises);
       const foundFiles = batchResults.filter((result) => result !== null);
-      discoveredFiles.push(...foundFiles);
 
-      if (foundFiles.length > 0) {
+      foundFiles.forEach(({ filename, data }) => {
+        if (!filesToLoad.includes(filename)) {
+          discoveredFiles.push(filename);
+          console.log(`🆕 Discovered: ${filename} - "${data.title}"`);
+        }
+        totalFound++;
+      });
+
+      // Stop early if we've found a reasonable number of files
+      if (totalFound >= 50) {
         console.log(
-          `🎉 Batch ${batchIndex + 1} found ${
-            foundFiles.length
-          } new files: ${foundFiles.join(", ")}`
+          `🛑 Found ${totalFound} files, stopping scan to avoid overload`
         );
-        break; // Stop searching once we find new files
+        break;
       }
     }
 
+    // Add discovered files to load list
     if (discoveredFiles.length > 0) {
       console.log(
         `🎊 Total discovered: ${
@@ -304,7 +122,7 @@ class CMSLoader {
       await this.updateRegistryWithNewFiles(
         registryFile,
         discoveredFiles,
-        directoryPath.includes("projects") ? "projects" : "services"
+        arrayKey
       );
     }
 
@@ -382,6 +200,201 @@ class CMSLoader {
     console.log(
       `🎯 Loading complete: ${uniqueResults.length} files loaded from ${directoryPath}`
     );
+  }
+
+  // Generate comprehensive list of possible filenames
+  generateAllPossibleFilenames() {
+    const filenames = [];
+
+    // Single letters (a.yml, b.yml, etc.)
+    for (let i = 97; i <= 122; i++) {
+      filenames.push(`${String.fromCharCode(i)}.yml`);
+    }
+
+    // Numbers (1.yml, 2.yml, etc.)
+    for (let i = 1; i <= 100; i++) {
+      filenames.push(`${i}.yml`);
+    }
+
+    // Common words and combinations
+    const words = [
+      "new",
+      "latest",
+      "recent",
+      "big",
+      "main",
+      "demo",
+      "work",
+      "job",
+      "test",
+      "task",
+      "site",
+      "shop",
+      "sample",
+      "office",
+      "commercial",
+      "project",
+      "service",
+      "residential",
+      "home",
+      "small",
+      "build",
+      "emergency",
+      "maintenance",
+      "repair",
+      "installation",
+      "electrical",
+      "power",
+      "lighting",
+      "wiring",
+      "panel",
+      "upgrade",
+      "install",
+      "smart",
+      "solar",
+      "generator",
+      "industrial",
+      "underground",
+      "first",
+      "second",
+      "third",
+      "fourth",
+      "fifth",
+      "final",
+      "temp",
+      "draft",
+      "client",
+      "customer",
+      "house",
+      "business",
+      "company",
+      "corp",
+      "enterprise",
+      "solution",
+      "system",
+      "design",
+      "custom",
+      "special",
+      "premium",
+      "basic",
+      "standard",
+      "advanced",
+      "pro",
+      "lite",
+      "full",
+      "complete",
+      "partial",
+      "quick",
+      "fast",
+      "slow",
+      "high",
+      "low",
+      "medium",
+      "large",
+      "tiny",
+      "huge",
+      "mini",
+      "mega",
+      "super",
+      "ultra",
+      "extra",
+      "plus",
+      "max",
+      "min",
+      "top",
+      "bottom",
+      "left",
+      "right",
+      "north",
+      "south",
+      "east",
+      "west",
+      "center",
+      "middle",
+      "inner",
+      "outer",
+      "front",
+      "back",
+      "side",
+      "corner",
+      "edge",
+      "end",
+      "start",
+      "begin",
+      "finish",
+      "done",
+      "ready",
+      "pending",
+      "active",
+      "inactive",
+      "old",
+      "young",
+      "fresh",
+      "stale",
+      "hot",
+      "cold",
+      "warm",
+      "cool",
+      "dry",
+      "wet",
+      "clean",
+      "dirty",
+      "clear",
+      "dark",
+      "light",
+      "bright",
+      "dim",
+      "loud",
+      "quiet",
+      "red",
+      "blue",
+      "green",
+      "yellow",
+      "black",
+      "white",
+      "gray",
+      "orange",
+      "purple",
+      "pink",
+      "brown",
+      "silver",
+      "gold",
+      "bronze",
+    ];
+
+    // Single words
+    words.forEach((word) => {
+      filenames.push(`${word}.yml`);
+    });
+
+    // Two-word combinations with hyphens
+    for (let i = 0; i < Math.min(words.length, 30); i++) {
+      for (let j = 0; j < Math.min(words.length, 30); j++) {
+        if (i !== j) {
+          filenames.push(`${words[i]}-${words[j]}.yml`);
+        }
+      }
+    }
+
+    // Word + number combinations
+    words.slice(0, 20).forEach((word) => {
+      for (let i = 1; i <= 20; i++) {
+        filenames.push(`${word}${i}.yml`);
+        filenames.push(`${word}-${i}.yml`);
+        filenames.push(`${i}-${word}.yml`);
+      }
+    });
+
+    // Letter + word combinations
+    for (let i = 97; i <= 122; i++) {
+      const letter = String.fromCharCode(i);
+      words.slice(0, 10).forEach((word) => {
+        filenames.push(`${letter}-${word}.yml`);
+        filenames.push(`${word}-${letter}.yml`);
+      });
+    }
+
+    return [...new Set(filenames)]; // Remove duplicates
   }
 
   // Auto-update registry when new files are discovered

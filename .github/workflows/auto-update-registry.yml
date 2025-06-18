@@ -3,10 +3,12 @@ name: Auto-Update Registry
 on:
   push:
     paths:
-      - "_data/projects/*.yml"
-      - "_data/services/*.yml"
-      - "!_data/projects-registry.yml"
-      - "!_data/services-registry.yml"
+      - "_data/projects/**/*.yml"
+      - "_data/services/**/*.yml"
+  pull_request:
+    paths:
+      - "_data/projects/**/*.yml"
+      - "_data/services/**/*.yml"
   workflow_dispatch: # Allow manual triggering
 
 jobs:
@@ -17,57 +19,81 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 0 # Full history for better git operations
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "18"
 
-      - name: Run auto-update registry script
+      - name: Install dependencies
         run: |
-          echo "🚀 Starting automatic registry update..."
+          npm install js-yaml
+
+      - name: Run registry update
+        run: |
+          echo "🤖 Running automatic registry update..."
           node auto-update-registry.js
 
-      - name: Check for registry changes
-        id: check_changes
+      - name: Check for changes
+        id: verify-changed-files
         run: |
-          if git diff --quiet HEAD -- _data/projects-registry.yml _data/services-registry.yml; then
-            echo "changes=false" >> $GITHUB_OUTPUT
-            echo "No registry changes detected"
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "Registry files have changes"
+            git status --porcelain
           else
-            echo "changes=true" >> $GITHUB_OUTPUT
-            echo "Registry changes detected"
-            git diff --name-only HEAD -- _data/projects-registry.yml _data/services-registry.yml
+            echo "changed=false" >> $GITHUB_OUTPUT
+            echo "No registry changes detected"
           fi
 
-      - name: Commit and push registry changes
-        if: steps.check_changes.outputs.changes == 'true'
+      - name: Commit and push changes
+        if: steps.verify-changed-files.outputs.changed == 'true'
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
 
+          # Add only the registry files
           git add _data/projects-registry.yml _data/services-registry.yml
 
-          # Count changes
-          PROJECTS_CHANGES=$(git diff --cached --name-only | grep -c "projects-registry" || echo "0")
-          SERVICES_CHANGES=$(git diff --cached --name-only | grep -c "services-registry" || echo "0")
+          # Create commit with detailed message
+          CHANGED_FILES=$(git diff --cached --name-only | wc -l)
+          PROJECT_COUNT=$(find _data/projects -name "*.yml" | wc -l)
+          SERVICE_COUNT=$(find _data/services -name "*.yml" | wc -l)
 
-          if [ "$PROJECTS_CHANGES" -gt 0 ] || [ "$SERVICES_CHANGES" -gt 0 ]; then
-            git commit -m "🤖 Auto-update registries 
-            
-            - Automatically sync registry files with actual .yml files
-            - This ensures new projects/services are immediately discoverable
-            - Triggered by file changes in _data/projects/ or _data/services/"
-            
-            git push
-            echo "✅ Registry changes committed and pushed"
-          else
-            echo "No changes to commit"
-          fi
+          git commit -m "🤖 Auto-update registries
+
+          - Projects: ${PROJECT_COUNT} files
+          - Services: ${SERVICE_COUNT} files
+          - Updated: ${CHANGED_FILES} registry files
+
+          Triggered by: ${{ github.event_name }}
+          Commit: ${{ github.sha }}"
+
+          # Push changes
+          git push
+
+          echo "✅ Registry changes committed and pushed"
 
       - name: Summary
         run: |
-          echo "🎯 Auto-update registry workflow completed!"
-          echo "Any new .yml files in _data/projects/ or _data/services/ are now registered"
-          echo "The CMS will automatically discover and load these files"
+          echo "## 📊 Registry Update Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          PROJECT_COUNT=$(find _data/projects -name "*.yml" | wc -l)
+          SERVICE_COUNT=$(find _data/services -name "*.yml" | wc -l)
+
+          echo "- **Projects**: ${PROJECT_COUNT} files" >> $GITHUB_STEP_SUMMARY
+          echo "- **Services**: ${SERVICE_COUNT} files" >> $GITHUB_STEP_SUMMARY
+          echo "- **Status**: ${{ steps.verify-changed-files.outputs.changed == 'true' && 'Updated' || 'Up to date' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Trigger**: ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
+
+          if [ "${{ steps.verify-changed-files.outputs.changed }}" == "true" ]; then
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "🎉 **Registry files have been automatically updated!**" >> $GITHUB_STEP_SUMMARY
+            echo "Your new files will be automatically discovered by the CMS." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "✨ **All registries are already up to date.**" >> $GITHUB_STEP_SUMMARY
+          fi

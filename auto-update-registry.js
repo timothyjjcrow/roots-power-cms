@@ -1,208 +1,228 @@
+#!/usr/bin/env node
+
 const fs = require("fs");
 const path = require("path");
+const yaml = require("js-yaml");
+const { execSync } = require("child_process");
 
-// Auto-update registry with comprehensive file discovery
-function autoUpdateRegistry() {
-  console.log("🤖 Auto-updating registries...");
+// Configuration
+const BASE_DIR = __dirname;
+const PROJECTS_DIR = path.join(BASE_DIR, "_data", "projects");
+const SERVICES_DIR = path.join(BASE_DIR, "_data", "services");
+const PROJECTS_REGISTRY = path.join(BASE_DIR, "_data", "projects-registry.yml");
+const SERVICES_REGISTRY = path.join(BASE_DIR, "_data", "services-registry.yml");
 
-  let totalUpdated = 0;
+console.log("🤖 Auto-updating registries...\n");
 
-  // Update projects registry
-  const projectsResult = updateDirectoryRegistry(
-    path.join(__dirname, "_data/projects"),
-    path.join(__dirname, "_data/projects-registry.yml"),
+// Function to scan directory for all .yml files
+function scanDirectory(dirPath) {
+  if (!fs.existsSync(dirPath)) {
+    console.log(`⚠️  Directory ${dirPath} does not exist`);
+    return [];
+  }
+
+  const files = fs
+    .readdirSync(dirPath)
+    .filter((file) => file.endsWith(".yml"))
+    .sort();
+
+  console.log(`🔍 Scanning ${dirPath} for .yml files...`);
+  console.log(`📁 Found ${files.length} .yml files:`, files);
+
+  return files;
+}
+
+// Function to read registry file
+function readRegistry(registryPath, key) {
+  try {
+    if (!fs.existsSync(registryPath)) {
+      console.log(
+        `📄 Registry ${registryPath} does not exist, creating new one`
+      );
+      return [];
+    }
+
+    const content = fs.readFileSync(registryPath, "utf8");
+    const data = yaml.load(content);
+
+    if (!data || !Array.isArray(data[key])) {
+      console.log(`📄 Registry ${registryPath} has invalid format, resetting`);
+      return [];
+    }
+
+    const files = data[key].sort();
+    console.log(`📋 Current registry has ${files.length} files:`, files);
+    return files;
+  } catch (error) {
+    console.log(`❌ Error reading registry ${registryPath}:`, error.message);
+    return [];
+  }
+}
+
+// Function to write registry file
+function writeRegistry(registryPath, key, files) {
+  try {
+    const data = { [key]: files.sort() };
+    const yamlContent = yaml.dump(data, {
+      indent: 2,
+      lineWidth: -1,
+      noRefs: true,
+      sortKeys: false,
+    });
+
+    fs.writeFileSync(registryPath, yamlContent, "utf8");
+    console.log(`✅ Registry updated: ${registryPath}`);
+    console.log(`📊 Total files in registry: ${files.length}`);
+    return true;
+  } catch (error) {
+    console.log(`❌ Error writing registry ${registryPath}:`, error.message);
+    return false;
+  }
+}
+
+// Function to compare arrays and show differences
+function compareArrays(actual, registry, type) {
+  const added = actual.filter((file) => !registry.includes(file));
+  const removed = registry.filter((file) => !actual.includes(file));
+
+  let changed = false;
+
+  if (added.length > 0) {
+    console.log(`🆕 Adding ${added.length} new files:`, added);
+    changed = true;
+  }
+
+  if (removed.length > 0) {
+    console.log(`🗑️  Removing ${removed.length} missing files:`, removed);
+    changed = true;
+  }
+
+  if (!changed) {
+    console.log(`✅ Registry is up to date`);
+  }
+
+  return { added, removed, changed };
+}
+
+// Function to commit changes automatically
+function autoCommitChanges(changedFiles) {
+  try {
+    if (changedFiles.length === 0) {
+      console.log("📝 No registry changes to commit");
+      return;
+    }
+
+    console.log("\n🔄 Registry changes detected, committing automatically...");
+
+    // Add the changed registry files
+    changedFiles.forEach((file) => {
+      execSync(`git add "${file}"`, { cwd: BASE_DIR, stdio: "pipe" });
+    });
+
+    // Count total changes
+    let totalAdded = 0;
+    let totalRemoved = 0;
+
+    // We'll get these from the summary at the end
+    const commitMessage = `Auto-update registries: sync with actual files`;
+
+    execSync(`git commit -m "${commitMessage}"`, {
+      cwd: BASE_DIR,
+      stdio: "pipe",
+    });
+    console.log(`✅ Auto-committed registry changes`);
+  } catch (error) {
+    console.log(`⚠️  Could not auto-commit changes: ${error.message}`);
+    console.log("💡 You may need to commit manually");
+  }
+}
+
+// Main execution
+function main() {
+  let changedRegistries = [];
+  let totalProjectsAdded = 0,
+    totalProjectsRemoved = 0;
+  let totalServicesAdded = 0,
+    totalServicesRemoved = 0;
+
+  // Process projects
+  const actualProjects = scanDirectory(PROJECTS_DIR);
+  const registryProjects = readRegistry(PROJECTS_REGISTRY, "projects");
+  const projectsDiff = compareArrays(
+    actualProjects,
+    registryProjects,
     "projects"
   );
 
-  // Update services registry
-  const servicesResult = updateDirectoryRegistry(
-    path.join(__dirname, "_data/services"),
-    path.join(__dirname, "_data/services-registry.yml"),
+  if (projectsDiff.changed) {
+    if (writeRegistry(PROJECTS_REGISTRY, "projects", actualProjects)) {
+      changedRegistries.push(PROJECTS_REGISTRY);
+      totalProjectsAdded = projectsDiff.added.length;
+      totalProjectsRemoved = projectsDiff.removed.length;
+    }
+  }
+
+  console.log(""); // Empty line for separation
+
+  // Process services
+  const actualServices = scanDirectory(SERVICES_DIR);
+  const registryServices = readRegistry(SERVICES_REGISTRY, "services");
+  const servicesDiff = compareArrays(
+    actualServices,
+    registryServices,
     "services"
   );
 
-  if (projectsResult.updated || servicesResult.updated) {
-    console.log("\n🔄 Registry changes detected, committing automatically...");
-
-    // Auto-commit if we're in a git environment
-    try {
-      const { execSync } = require("child_process");
-
-      // Add changed files
-      if (projectsResult.updated) {
-        execSync("git add _data/projects-registry.yml", { stdio: "inherit" });
-        totalUpdated++;
-      }
-      if (servicesResult.updated) {
-        execSync("git add _data/services-registry.yml", { stdio: "inherit" });
-        totalUpdated++;
-      }
-
-      if (totalUpdated > 0) {
-        const commitMessage = `Auto-update registries: ${
-          projectsResult.added + servicesResult.added
-        } added, ${projectsResult.removed + servicesResult.removed} removed`;
-        execSync(`git commit -m "${commitMessage}"`, { stdio: "inherit" });
-        console.log("✅ Auto-committed registry changes");
-
-        // Optionally auto-push (uncomment if desired)
-        // execSync('git push origin main', { stdio: 'inherit' });
-        // console.log('🚀 Auto-pushed to remote');
-      }
-    } catch (error) {
-      console.log(
-        "⚠️ Auto-commit failed (may not be in git repo):",
-        error.message
-      );
+  if (servicesDiff.changed) {
+    if (writeRegistry(SERVICES_REGISTRY, "services", actualServices)) {
+      changedRegistries.push(SERVICES_REGISTRY);
+      totalServicesAdded = servicesDiff.added.length;
+      totalServicesRemoved = servicesDiff.removed.length;
     }
   }
 
-  return {
-    projects: projectsResult,
-    services: servicesResult,
-    totalUpdated,
-  };
-}
-
-function updateDirectoryRegistry(directory, registryFile, arrayKey) {
-  console.log(`\n🔍 Scanning ${directory} for .yml files...`);
-
-  try {
-    // Read all files in the directory
-    const actualFiles = fs
-      .readdirSync(directory)
-      .filter((file) => file.endsWith(".yml"))
-      .sort();
-
-    console.log(`📁 Found ${actualFiles.length} .yml files:`, actualFiles);
-
-    // Read current registry
-    let registryFiles = [];
-    let registryExists = false;
-
-    if (fs.existsSync(registryFile)) {
-      registryExists = true;
-      const registryContent = fs.readFileSync(registryFile, "utf8");
-
-      // Parse YAML registry
-      const lines = registryContent.split("\n");
-      let inArray = false;
-
-      for (const line of lines) {
-        if (line.trim().startsWith(arrayKey + ":")) {
-          inArray = true;
-          continue;
-        }
-        if (inArray && line.trim().startsWith("- ")) {
-          registryFiles.push(line.trim().substring(2));
-        } else if (inArray && line.trim() && !line.startsWith(" ")) {
-          break;
-        }
-      }
-      console.log(
-        `📋 Current registry has ${registryFiles.length} files:`,
-        registryFiles
-      );
-    } else {
-      console.log(
-        `📄 Registry file doesn't exist, will create: ${registryFile}`
-      );
-    }
-
-    // Calculate differences
-    const newFiles = actualFiles.filter(
-      (file) => !registryFiles.includes(file)
-    );
-    const removedFiles = registryFiles.filter(
-      (file) => !actualFiles.includes(file)
-    );
-    const hasChanges = newFiles.length > 0 || removedFiles.length > 0;
-
-    if (newFiles.length > 0) {
-      console.log(`🆕 Adding ${newFiles.length} new files:`, newFiles);
-    }
-
-    if (removedFiles.length > 0) {
-      console.log(
-        `🗑️  Removing ${removedFiles.length} missing files:`,
-        removedFiles
-      );
-    }
-
-    if (!hasChanges && registryExists) {
-      console.log(`✅ Registry is up to date`);
-      return {
-        updated: false,
-        added: 0,
-        removed: 0,
-        total: actualFiles.length,
-        files: actualFiles,
-      };
-    }
-
-    // Write updated registry
-    const yamlContent = `${arrayKey}:\n${actualFiles
-      .map((file) => `  - ${file}`)
-      .join("\n")}\n`;
-    fs.writeFileSync(registryFile, yamlContent, "utf8");
-
-    console.log(`✅ Registry updated: ${registryFile}`);
-    console.log(`📊 Total files in registry: ${actualFiles.length}`);
-
-    return {
-      updated: true,
-      added: newFiles.length,
-      removed: removedFiles.length,
-      total: actualFiles.length,
-      files: actualFiles,
-    };
-  } catch (error) {
-    console.error(
-      `❌ Error updating registry for ${directory}:`,
-      error.message
-    );
-    return {
-      updated: false,
-      added: 0,
-      removed: 0,
-      total: 0,
-      files: [],
-    };
+  // Auto-commit if there are changes
+  if (changedRegistries.length > 0) {
+    autoCommitChanges(changedRegistries);
   }
-}
 
-// Export for use as module
-module.exports = { autoUpdateRegistry, updateDirectoryRegistry };
-
-// Run if called directly
-if (require.main === module) {
-  const result = autoUpdateRegistry();
-
+  // Final summary
   console.log("\n📈 FINAL SUMMARY:");
-  if (result.projects.updated) {
-    console.log(
-      `   Projects: ${result.projects.total} files (${result.projects.added} added, ${result.projects.removed} removed)`
-    );
-  } else {
-    console.log(`   Projects: ${result.projects.total} files (no changes)`);
-  }
+  console.log(
+    `   Projects: ${actualProjects.length} files (${
+      totalProjectsAdded ? totalProjectsAdded + " added, " : ""
+    }${
+      totalProjectsRemoved
+        ? totalProjectsRemoved + " removed"
+        : totalProjectsAdded
+        ? ""
+        : "no changes"
+    })`
+  );
+  console.log(
+    `   Services: ${actualServices.length} files (${
+      totalServicesAdded ? totalServicesAdded + " added, " : ""
+    }${
+      totalServicesRemoved
+        ? totalServicesRemoved + " removed"
+        : totalServicesAdded
+        ? ""
+        : "no changes"
+    })`
+  );
 
-  if (result.services.updated) {
+  if (changedRegistries.length > 0) {
     console.log(
-      `   Services: ${result.services.total} files (${result.services.added} added, ${result.services.removed} removed)`
-    );
-  } else {
-    console.log(`   Services: ${result.services.total} files (no changes)`);
-  }
-
-  if (result.totalUpdated > 0) {
-    console.log(
-      `\n🎉 Updated ${result.totalUpdated} registry files successfully!`
+      `\n🎉 Updated ${changedRegistries.length} registry files successfully!`
     );
     console.log(
       "💡 Your new files will now be automatically discovered by the CMS!"
     );
+    console.log("🚀 Changes have been committed - push to deploy to live site");
   } else {
-    console.log("\n✨ All registries are up to date!");
+    console.log("\n✨ All registries are already up to date!");
   }
 }
+
+// Run the script
+main();
