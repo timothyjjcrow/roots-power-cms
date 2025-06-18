@@ -57,40 +57,44 @@ class CMSLoader {
       console.log(`📄 Registry not found, will use fallback discovery`);
     }
 
-    // Step 2: Only do discovery if registry is empty or missing
-    if (filesToLoad.length === 0) {
-      console.log(`🔍 Registry empty, trying fallback file discovery...`);
+    // Step 2: ALWAYS check for new files (not just when registry is empty)
+    console.log(`🔍 Checking for new files not in registry...`);
 
-      // Try a small set of common filenames only
-      const commonFilenames = this.getCommonFilenames(directoryPath);
+    const commonFilenames = this.getCommonFilenames(directoryPath);
 
-      for (const filename of commonFilenames) {
-        try {
-          const data = await this.loadYAML(`${directoryPath}${filename}`, true);
-          if (data && data.title) {
-            discoveredFiles.push(filename);
-            console.log(`🆕 Discovered: ${filename} - "${data.title}"`);
-          }
-        } catch (error) {
-          // Silently ignore - this is expected for discovery
+    for (const filename of commonFilenames) {
+      // Skip if already in registry
+      if (filesToLoad.includes(filename)) {
+        continue;
+      }
+
+      try {
+        const data = await this.loadYAML(`${directoryPath}${filename}`, true);
+        if (data && data.title) {
+          discoveredFiles.push(filename);
+          console.log(`🆕 Discovered NEW file: ${filename} - "${data.title}"`);
         }
+      } catch (error) {
+        // Silently ignore - this is expected for discovery
       }
+    }
 
-      if (discoveredFiles.length > 0) {
-        console.log(
-          `🎊 Total discovered: ${
-            discoveredFiles.length
-          } new files: ${discoveredFiles.join(", ")}`
-        );
-        filesToLoad.push(...discoveredFiles);
+    if (discoveredFiles.length > 0) {
+      console.log(
+        `🎊 Found ${discoveredFiles.length} new files: ${discoveredFiles.join(
+          ", "
+        )}`
+      );
+      filesToLoad.push(...discoveredFiles);
 
-        // Auto-update registry
-        await this.updateRegistryWithNewFiles(
-          registryFile,
-          discoveredFiles,
-          arrayKey
-        );
-      }
+      // Auto-update registry
+      await this.updateRegistryWithNewFiles(
+        registryFile,
+        discoveredFiles,
+        arrayKey
+      );
+    } else {
+      console.log(`✅ No new files found - registry is current`);
     }
 
     // Step 3: Fallback to known files if nothing found
@@ -177,22 +181,42 @@ class CMSLoader {
       "c.yml",
       "d.yml",
       "e.yml",
+      "f.yml",
+      "g.yml",
+      "h.yml",
+      "i.yml",
+      "j.yml",
       // Numbers
       "1.yml",
       "2.yml",
       "3.yml",
       "4.yml",
       "5.yml",
+      "6.yml",
+      "7.yml",
+      "8.yml",
+      "9.yml",
+      "10.yml",
       // Common words
       "new.yml",
       "test.yml",
       "demo.yml",
       "main.yml",
       "latest.yml",
+      "temp.yml",
+      "draft.yml",
       "work.yml",
       "project.yml",
       "service.yml",
       "sample.yml",
+      "client.yml",
+      "custom.yml",
+      // Common patterns
+      "my.yml",
+      "the.yml",
+      "our.yml",
+      "this.yml",
+      "that.yml",
     ];
 
     if (directoryPath.includes("projects")) {
@@ -201,11 +225,16 @@ class CMSLoader {
         "a-project.yml",
         "new-project.yml",
         "test-project.yml",
+        "my-project.yml",
         "project-1.yml",
         "project-2.yml",
-        "my-project.yml",
+        "project-3.yml",
+        "project-a.yml",
+        "project-b.yml",
         "client-project.yml",
         "the-project.yml",
+        "latest-project.yml",
+        "main-project.yml",
       ];
     } else {
       return [
@@ -213,12 +242,20 @@ class CMSLoader {
         "a-service.yml",
         "new-service.yml",
         "test-service.yml",
+        "my-service.yml",
         "service-1.yml",
         "service-2.yml",
-        "my-service.yml",
+        "service-3.yml",
+        "service-a.yml",
+        "service-b.yml",
         "emergency.yml",
         "maintenance.yml",
         "repair.yml",
+        "installation.yml",
+        "electrical.yml",
+        "the-service.yml",
+        "latest-service.yml",
+        "main-service.yml",
       ];
     }
   }
