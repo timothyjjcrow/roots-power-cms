@@ -1,17 +1,18 @@
-title: "Commercial Installations"
-description: "We offer all the same services to our Commercial customers as offered to our Residential customers, plus those services that are unique to your particular business."
-image: "./service images/commercial service.jpg"
-button_text: "Commercial Quote"
+title: Commercial Installations
+description: We offer all the same services to our Commercial customers as
+  offered to our Residential customers, plus those services that are unique to
+  your particular business.
+image: /images/uploads/image.jpg
+button_text: Commercial Quote
 button_link: "#contact"
 featured: false
 order: 2
-
 features:
-  - "New Construction"
-  - "Lighting Design & Installation"
-  - "Fire Alarm Systems"
-  - "Security Systems"
-  - "Data/Network Cabling"
-  - "Motor Controls"
-  - "Electrical Maintenance Programs"
-  - "Solar / Renewable Energy"
+  - New Construction
+  - Lighting Design & Installation
+  - Fire Alarm Systems
+  - Security Systems
+  - Data/Network Cabling
+  - Motor Controls
+  - Electrical Maintenance Programs
+  - Solar / Renewable Energy

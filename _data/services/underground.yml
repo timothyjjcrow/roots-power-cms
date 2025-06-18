@@ -1,17 +1,18 @@
-title: "Underground Installations"
-description: "Professional underground electrical installations for site development, infrastructure work, and specialized electrical projects requiring below-ground solutions."
-image: "./service images/underground service.png"
-button_text: "Infrastructure Quote"
+title: Underground Installations
+description: Professional underground electrical installations for site
+  development, infrastructure work, and specialized electrical projects
+  requiring below-ground solutions.
+image: /images/uploads/image.jpg
+button_text: Infrastructure Quote
 button_link: "#contact"
 featured: false
 order: 3
-
 features:
-  - "Trenching"
-  - "Conduit Installation"
-  - "Wire Pulling"
-  - "Site Development"
-  - "Infrastructure Work"
-  - "Utility Connections"
-  - "Grounding Systems"
-  - "Generator / Backup Battery Installations"
+  - Trenching
+  - Conduit Installation
+  - Wire Pulling
+  - Site Development
+  - Infrastructure Work
+  - Utility Connections
+  - Grounding Systems
+  - Generator / Backup Battery Installations

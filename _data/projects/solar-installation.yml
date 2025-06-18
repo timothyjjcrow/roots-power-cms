@@ -1,8 +1,10 @@
-title: "Solar PV Installation"
-description: "Grid-tied solar photovoltaic system with battery backup, providing clean energy and energy independence for residential client. Complete system design and installation."
-image: "./service images/Solar:Renewable Energy1.png"
+title: Solar PV Installation
+description: Grid-tied solar photovoltaic system with battery backup, providing
+  clean energy and energy independence for residential client. Complete system
+  design and installation.
+image: /images/uploads/image.jpg
 order: 3
 tags:
-  - "Solar"
-  - "Battery Backup"
-  - "Grid-Tied"
+  - Solar
+  - Battery Backup
+  - Grid-Tied
