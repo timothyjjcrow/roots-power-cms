@@ -28,7 +28,7 @@ class CMSLoader {
     }
   }
 
-  // Load all YAML files from a directory using registry + intelligent auto-discovery
+  // Load all YAML files from a directory using registry + comprehensive auto-discovery
   async loadAllFilesFromDirectory(directoryPath, targetArray) {
     console.log(`🔍 Loading files from ${directoryPath}`);
 
@@ -61,42 +61,138 @@ class CMSLoader {
       console.log(`⚠️ Registry file ${registryFile} not found or invalid`);
     }
 
-    // Step 2: Try intelligent auto-discovery for new files
-    // Generate reasonable patterns that might exist
+    // Step 2: Comprehensive auto-discovery system
+    // Generate extensive patterns to catch ANY reasonable filename
     const discoveryPatterns = [];
 
     if (directoryPath.includes("projects")) {
+      // Generate comprehensive patterns for projects
+      const words = [
+        "new",
+        "latest",
+        "recent",
+        "big",
+        "small",
+        "main",
+        "test",
+        "demo",
+        "sample",
+        "project",
+        "work",
+        "job",
+        "task",
+        "build",
+        "site",
+        "home",
+        "office",
+        "shop",
+        "commercial",
+        "residential",
+        "industrial",
+        "solar",
+        "electrical",
+        "power",
+        "lighting",
+        "wiring",
+        "panel",
+        "upgrade",
+        "install",
+        "repair",
+        "service",
+        "first",
+        "second",
+        "third",
+        "fourth",
+        "fifth",
+        "final",
+        "temp",
+        "draft",
+      ];
+
+      // Single words
+      words.forEach((word) => {
+        discoveryPatterns.push(`${word}.yml`);
+      });
+
+      // Word combinations
+      words.slice(0, 15).forEach((word1) => {
+        words.slice(0, 15).forEach((word2) => {
+          if (word1 !== word2) {
+            discoveryPatterns.push(`${word1}-${word2}.yml`);
+            discoveryPatterns.push(`${word1}${word2}.yml`);
+          }
+        });
+      });
+
+      // Numbers and letters
+      for (let i = 1; i <= 20; i++) {
+        discoveryPatterns.push(`project${i}.yml`);
+        discoveryPatterns.push(`project-${i}.yml`);
+        discoveryPatterns.push(`${i}.yml`);
+      }
+
+      // Single letters
+      for (let c = 97; c <= 122; c++) {
+        // a-z
+        const letter = String.fromCharCode(c);
+        discoveryPatterns.push(`${letter}.yml`);
+        discoveryPatterns.push(`${letter}-project.yml`);
+        discoveryPatterns.push(`project-${letter}.yml`);
+      }
+
+      // Common patterns
       discoveryPatterns.push(
-        // Most common project naming patterns (reduced list)
-        "new-project.yml",
-        "latest-project.yml",
-        "project-new.yml",
-        "project2.yml",
-        "project3.yml",
-        // Simple patterns
-        "project-1.yml",
-        "project-2.yml"
+        "the.yml",
+        "my.yml",
+        "our.yml",
+        "this.yml",
+        "that.yml"
       );
     } else if (directoryPath.includes("services")) {
-      discoveryPatterns.push(
-        // Most common service patterns (reduced list)
-        "new-service.yml",
-        "emergency.yml",
-        "maintenance.yml"
-      );
+      // Service patterns
+      const serviceWords = [
+        "new",
+        "emergency",
+        "maintenance",
+        "repair",
+        "installation",
+        "service",
+        "electrical",
+        "power",
+        "lighting",
+      ];
+      serviceWords.forEach((word) => {
+        discoveryPatterns.push(`${word}.yml`);
+        discoveryPatterns.push(`${word}-service.yml`);
+      });
     }
 
-    // Try discovery patterns (only ones not already in registry)
-    const unknownPatterns = discoveryPatterns.filter(
+    // Remove duplicates and filter out already known files
+    const uniquePatterns = [...new Set(discoveryPatterns)];
+    const unknownPatterns = uniquePatterns.filter(
       (pattern) => !filesToLoad.includes(pattern)
     );
 
-    if (unknownPatterns.length > 0) {
+    console.log(
+      `🔍 Trying ${unknownPatterns.length} discovery patterns for new files...`
+    );
+
+    // Batch discovery in smaller groups to avoid overwhelming the server
+    const batchSize = 20;
+    const batches = [];
+    for (let i = 0; i < unknownPatterns.length; i += batchSize) {
+      batches.push(unknownPatterns.slice(i, i + batchSize));
+    }
+
+    for (let batchIndex = 0; batchIndex < batches.length; batchIndex++) {
+      const batch = batches[batchIndex];
       console.log(
-        `🔍 Trying ${unknownPatterns.length} discovery patterns for new files...`
+        `🔄 Processing discovery batch ${batchIndex + 1}/${batches.length} (${
+          batch.length
+        } files)...`
       );
 
-      const discoveryPromises = unknownPatterns.map(async (filename) => {
+      const batchPromises = batch.map(async (filename) => {
         try {
           const data = await this.loadYAML(`${directoryPath}${filename}`, true);
           if (data && data.title) {
@@ -111,17 +207,34 @@ class CMSLoader {
         return null;
       });
 
-      const discoveryResults = await Promise.all(discoveryPromises);
-      discoveredFiles = discoveryResults.filter((result) => result !== null);
+      const batchResults = await Promise.all(batchPromises);
+      const foundFiles = batchResults.filter((result) => result !== null);
+      discoveredFiles.push(...foundFiles);
 
-      if (discoveredFiles.length > 0) {
+      if (foundFiles.length > 0) {
         console.log(
-          `🎉 Found ${discoveredFiles.length} new files: ${discoveredFiles.join(
-            ", "
-          )}`
+          `🎉 Batch ${batchIndex + 1} found ${
+            foundFiles.length
+          } new files: ${foundFiles.join(", ")}`
         );
-        filesToLoad.push(...discoveredFiles);
+        break; // Stop searching once we find new files
       }
+    }
+
+    if (discoveredFiles.length > 0) {
+      console.log(
+        `🎊 Total discovered: ${
+          discoveredFiles.length
+        } new files: ${discoveredFiles.join(", ")}`
+      );
+      filesToLoad.push(...discoveredFiles);
+
+      // Auto-update registry
+      await this.updateRegistryWithNewFiles(
+        registryFile,
+        discoveredFiles,
+        directoryPath.includes("projects") ? "projects" : "services"
+      );
     }
 
     // Step 3: Fallback to known files if nothing found
@@ -195,18 +308,43 @@ class CMSLoader {
       targetArray.push(data);
     });
 
-    // Step 6: Auto-update registry if new files were discovered
-    if (discoveredFiles.length > 0) {
-      console.log(
-        `🔄 Consider updating ${registryFile} to include: ${discoveredFiles.join(
-          ", "
-        )}`
-      );
-    }
-
     console.log(
       `🎯 Loading complete: ${uniqueResults.length} files loaded from ${directoryPath}`
     );
+  }
+
+  // Auto-update registry when new files are discovered
+  async updateRegistryWithNewFiles(registryFile, newFiles, arrayKey) {
+    try {
+      console.log(
+        `🔄 Auto-updating registry ${registryFile} with new files: ${newFiles.join(
+          ", "
+        )}`
+      );
+
+      // Read current registry
+      let currentFiles = [];
+      try {
+        const registryData = await this.loadYAML(registryFile, true);
+        if (registryData && Array.isArray(registryData[arrayKey])) {
+          currentFiles = registryData[arrayKey];
+        }
+      } catch (error) {
+        console.log(`📄 Creating new registry as current one not found`);
+      }
+
+      // Add new files to registry
+      const updatedFiles = [...currentFiles, ...newFiles];
+
+      // Note: In a browser environment, we can't write files directly
+      // This would need to be handled by a server endpoint or build process
+      console.log(
+        `💡 Registry should be updated to include: ${updatedFiles.join(", ")}`
+      );
+      console.log(`💡 Run 'node update-registry.js' to sync the registry file`);
+    } catch (error) {
+      console.error(`❌ Error updating registry:`, error);
+    }
   }
 
   // Simple YAML parser for our basic structure

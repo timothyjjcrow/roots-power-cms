@@ -1,0 +1,73 @@
+name: Auto-Update Registry
+
+on:
+  push:
+    paths:
+      - "_data/projects/*.yml"
+      - "_data/services/*.yml"
+      - "!_data/projects-registry.yml"
+      - "!_data/services-registry.yml"
+  workflow_dispatch: # Allow manual triggering
+
+jobs:
+  update-registry:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+
+      - name: Run auto-update registry script
+        run: |
+          echo "🚀 Starting automatic registry update..."
+          node auto-update-registry.js
+
+      - name: Check for registry changes
+        id: check_changes
+        run: |
+          if git diff --quiet HEAD -- _data/projects-registry.yml _data/services-registry.yml; then
+            echo "changes=false" >> $GITHUB_OUTPUT
+            echo "No registry changes detected"
+          else
+            echo "changes=true" >> $GITHUB_OUTPUT
+            echo "Registry changes detected"
+            git diff --name-only HEAD -- _data/projects-registry.yml _data/services-registry.yml
+          fi
+
+      - name: Commit and push registry changes
+        if: steps.check_changes.outputs.changes == 'true'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+
+          git add _data/projects-registry.yml _data/services-registry.yml
+
+          # Count changes
+          PROJECTS_CHANGES=$(git diff --cached --name-only | grep -c "projects-registry" || echo "0")
+          SERVICES_CHANGES=$(git diff --cached --name-only | grep -c "services-registry" || echo "0")
+
+          if [ "$PROJECTS_CHANGES" -gt 0 ] || [ "$SERVICES_CHANGES" -gt 0 ]; then
+            git commit -m "🤖 Auto-update registries 
+            
+            - Automatically sync registry files with actual .yml files
+            - This ensures new projects/services are immediately discoverable
+            - Triggered by file changes in _data/projects/ or _data/services/"
+            
+            git push
+            echo "✅ Registry changes committed and pushed"
+          else
+            echo "No changes to commit"
+          fi
+
+      - name: Summary
+        run: |
+          echo "🎯 Auto-update registry workflow completed!"
+          echo "Any new .yml files in _data/projects/ or _data/services/ are now registered"
+          echo "The CMS will automatically discover and load these files"
