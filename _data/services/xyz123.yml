@@ -1,0 +1,13 @@
+title: "XYZ Test Service"
+description: "This service has a completely arbitrary filename (xyz123.yml) to prove the new auto-discovery system works with ANY filename - no patterns needed!"
+image: "/images/uploads/image.jpg"
+order: 999
+tags:
+  - test
+  - arbitrary
+  - filename
+features:
+  - "Works with ANY filename"
+  - "No patterns required"
+  - "Automatic discovery"
+  - "Ultimate flexibility"
