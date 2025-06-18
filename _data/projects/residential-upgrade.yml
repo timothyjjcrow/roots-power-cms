@@ -1,8 +1,10 @@
-title: "Residential Service Upgrade"
-description: "Full panel upgrade and home rewiring project featuring modern electrical systems, smart home integration, and energy-efficient solutions for a growing family."
-image: "./service images/residential service.avif"
+title: Residential Service Upgrade
+description: Full panel upgrade and home rewiring project featuring modern
+  electrical systems, smart home integration, and energy-efficient solutions for
+  a growing family.
+image: /images/uploads/image.jpg
 order: 2
 tags:
-  - "Residential"
-  - "Panel Upgrade"
-  - "Smart Home"
+  - Residential
+  - Panel Upgrade
+  - Smart Home
