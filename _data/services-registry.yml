@@ -6,4 +6,5 @@ services:
   - residential.yml
   - smart-home.yml
   - solar.yml
+  - test-service.yml
   - underground.yml
