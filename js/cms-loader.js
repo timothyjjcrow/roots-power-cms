@@ -67,42 +67,22 @@ class CMSLoader {
 
     if (directoryPath.includes("projects")) {
       discoveryPatterns.push(
-        // Common project naming patterns
+        // Most common project naming patterns (reduced list)
         "new-project.yml",
         "latest-project.yml",
-        "recent-project.yml",
         "project-new.yml",
-        "project-latest.yml",
-        "project-recent.yml",
         "project2.yml",
         "project3.yml",
-        "project4.yml",
-        "project5.yml",
-        // Date-based patterns
-        "project-2024.yml",
-        "project-2025.yml",
-        // Type-based patterns
-        "commercial-project.yml",
-        "residential-project.yml",
-        "solar-project.yml",
-        "electrical-project.yml",
         // Simple patterns
-        "project-a.yml",
-        "project-b.yml",
-        "project-c.yml",
         "project-1.yml",
-        "project-2.yml",
-        "project-3.yml"
+        "project-2.yml"
       );
     } else if (directoryPath.includes("services")) {
       discoveryPatterns.push(
+        // Most common service patterns (reduced list)
         "new-service.yml",
-        "latest-service.yml",
-        "service-new.yml",
         "emergency.yml",
-        "maintenance.yml",
-        "repair.yml",
-        "installation.yml"
+        "maintenance.yml"
       );
     }
 
