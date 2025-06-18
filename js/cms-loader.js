@@ -30,10 +30,12 @@ class CMSLoader {
 
   // Load all YAML files from a directory using registry + comprehensive auto-discovery
   async loadAllFilesFromDirectory(directoryPath, targetArray) {
-    const discoveredFiles = [];
-    let filesToLoad = [];
+    console.log(`🔍 Loading files from ${directoryPath}`);
 
-    // Step 1: Try to load registry first
+    let filesToLoad = [];
+    const discoveredFiles = [];
+
+    // Step 1: Try to load registry first (primary source)
     const registryFile = directoryPath.includes("projects")
       ? "/_data/projects-registry.yml"
       : "/_data/services-registry.yml";
@@ -52,85 +54,49 @@ class CMSLoader {
         );
       }
     } catch (error) {
-      console.log(`📄 Registry not found, will use direct discovery`);
+      console.log(`📄 Registry not found, will use fallback discovery`);
     }
 
-    // Step 2: Direct directory scanning - try common filenames to discover what exists
-    console.log(`🔍 Scanning directory for all .yml files...`);
+    // Step 2: Only do discovery if registry is empty or missing
+    if (filesToLoad.length === 0) {
+      console.log(`🔍 Registry empty, trying fallback file discovery...`);
 
-    // Generate a comprehensive list of potential filenames to test
-    const potentialFiles = this.generateAllPossibleFilenames();
+      // Try a small set of common filenames only
+      const commonFilenames = this.getCommonFilenames(directoryPath);
 
-    // Test files in batches to find what actually exists
-    const batchSize = 50;
-    const batches = [];
-    for (let i = 0; i < potentialFiles.length; i += batchSize) {
-      batches.push(potentialFiles.slice(i, i + batchSize));
-    }
-
-    let totalFound = 0;
-    for (let batchIndex = 0; batchIndex < batches.length; batchIndex++) {
-      const batch = batches[batchIndex];
-      console.log(
-        `🔄 Scanning batch ${batchIndex + 1}/${batches.length} (${
-          batch.length
-        } files)...`
-      );
-
-      const batchPromises = batch.map(async (filename) => {
+      for (const filename of commonFilenames) {
         try {
           const data = await this.loadYAML(`${directoryPath}${filename}`, true);
           if (data && data.title) {
-            return { filename, data };
+            discoveredFiles.push(filename);
+            console.log(`🆕 Discovered: ${filename} - "${data.title}"`);
           }
         } catch (error) {
           // Silently ignore - this is expected for discovery
         }
-        return null;
-      });
-
-      const batchResults = await Promise.all(batchPromises);
-      const foundFiles = batchResults.filter((result) => result !== null);
-
-      foundFiles.forEach(({ filename, data }) => {
-        if (!filesToLoad.includes(filename)) {
-          discoveredFiles.push(filename);
-          console.log(`🆕 Discovered: ${filename} - "${data.title}"`);
-        }
-        totalFound++;
-      });
-
-      // Stop early if we've found a reasonable number of files
-      if (totalFound >= 50) {
-        console.log(
-          `🛑 Found ${totalFound} files, stopping scan to avoid overload`
-        );
-        break;
       }
-    }
 
-    // Add discovered files to load list
-    if (discoveredFiles.length > 0) {
-      console.log(
-        `🎊 Total discovered: ${
-          discoveredFiles.length
-        } new files: ${discoveredFiles.join(", ")}`
-      );
-      filesToLoad.push(...discoveredFiles);
+      if (discoveredFiles.length > 0) {
+        console.log(
+          `🎊 Total discovered: ${
+            discoveredFiles.length
+          } new files: ${discoveredFiles.join(", ")}`
+        );
+        filesToLoad.push(...discoveredFiles);
 
-      // Auto-update registry
-      await this.updateRegistryWithNewFiles(
-        registryFile,
-        discoveredFiles,
-        arrayKey
-      );
+        // Auto-update registry
+        await this.updateRegistryWithNewFiles(
+          registryFile,
+          discoveredFiles,
+          arrayKey
+        );
+      }
     }
 
     // Step 3: Fallback to known files if nothing found
     if (filesToLoad.length === 0) {
       if (directoryPath.includes("projects")) {
         filesToLoad = [
-          "a-project.yml",
           "coastal-commercial.yml",
           "residential-upgrade.yml",
           "solar-installation.yml",
@@ -202,199 +168,59 @@ class CMSLoader {
     );
   }
 
-  // Generate comprehensive list of possible filenames
-  generateAllPossibleFilenames() {
-    const filenames = [];
-
-    // Single letters (a.yml, b.yml, etc.)
-    for (let i = 97; i <= 122; i++) {
-      filenames.push(`${String.fromCharCode(i)}.yml`);
-    }
-
-    // Numbers (1.yml, 2.yml, etc.)
-    for (let i = 1; i <= 100; i++) {
-      filenames.push(`${i}.yml`);
-    }
-
-    // Common words and combinations
-    const words = [
-      "new",
-      "latest",
-      "recent",
-      "big",
-      "main",
-      "demo",
-      "work",
-      "job",
-      "test",
-      "task",
-      "site",
-      "shop",
-      "sample",
-      "office",
-      "commercial",
-      "project",
-      "service",
-      "residential",
-      "home",
-      "small",
-      "build",
-      "emergency",
-      "maintenance",
-      "repair",
-      "installation",
-      "electrical",
-      "power",
-      "lighting",
-      "wiring",
-      "panel",
-      "upgrade",
-      "install",
-      "smart",
-      "solar",
-      "generator",
-      "industrial",
-      "underground",
-      "first",
-      "second",
-      "third",
-      "fourth",
-      "fifth",
-      "final",
-      "temp",
-      "draft",
-      "client",
-      "customer",
-      "house",
-      "business",
-      "company",
-      "corp",
-      "enterprise",
-      "solution",
-      "system",
-      "design",
-      "custom",
-      "special",
-      "premium",
-      "basic",
-      "standard",
-      "advanced",
-      "pro",
-      "lite",
-      "full",
-      "complete",
-      "partial",
-      "quick",
-      "fast",
-      "slow",
-      "high",
-      "low",
-      "medium",
-      "large",
-      "tiny",
-      "huge",
-      "mini",
-      "mega",
-      "super",
-      "ultra",
-      "extra",
-      "plus",
-      "max",
-      "min",
-      "top",
-      "bottom",
-      "left",
-      "right",
-      "north",
-      "south",
-      "east",
-      "west",
-      "center",
-      "middle",
-      "inner",
-      "outer",
-      "front",
-      "back",
-      "side",
-      "corner",
-      "edge",
-      "end",
-      "start",
-      "begin",
-      "finish",
-      "done",
-      "ready",
-      "pending",
-      "active",
-      "inactive",
-      "old",
-      "young",
-      "fresh",
-      "stale",
-      "hot",
-      "cold",
-      "warm",
-      "cool",
-      "dry",
-      "wet",
-      "clean",
-      "dirty",
-      "clear",
-      "dark",
-      "light",
-      "bright",
-      "dim",
-      "loud",
-      "quiet",
-      "red",
-      "blue",
-      "green",
-      "yellow",
-      "black",
-      "white",
-      "gray",
-      "orange",
-      "purple",
-      "pink",
-      "brown",
-      "silver",
-      "gold",
-      "bronze",
+  // Get a small set of common filenames to try (no massive pattern generation)
+  getCommonFilenames(directoryPath) {
+    const common = [
+      // Single letters
+      "a.yml",
+      "b.yml",
+      "c.yml",
+      "d.yml",
+      "e.yml",
+      // Numbers
+      "1.yml",
+      "2.yml",
+      "3.yml",
+      "4.yml",
+      "5.yml",
+      // Common words
+      "new.yml",
+      "test.yml",
+      "demo.yml",
+      "main.yml",
+      "latest.yml",
+      "work.yml",
+      "project.yml",
+      "service.yml",
+      "sample.yml",
     ];
 
-    // Single words
-    words.forEach((word) => {
-      filenames.push(`${word}.yml`);
-    });
-
-    // Two-word combinations with hyphens
-    for (let i = 0; i < Math.min(words.length, 30); i++) {
-      for (let j = 0; j < Math.min(words.length, 30); j++) {
-        if (i !== j) {
-          filenames.push(`${words[i]}-${words[j]}.yml`);
-        }
-      }
+    if (directoryPath.includes("projects")) {
+      return [
+        ...common,
+        "a-project.yml",
+        "new-project.yml",
+        "test-project.yml",
+        "project-1.yml",
+        "project-2.yml",
+        "my-project.yml",
+        "client-project.yml",
+        "the-project.yml",
+      ];
+    } else {
+      return [
+        ...common,
+        "a-service.yml",
+        "new-service.yml",
+        "test-service.yml",
+        "service-1.yml",
+        "service-2.yml",
+        "my-service.yml",
+        "emergency.yml",
+        "maintenance.yml",
+        "repair.yml",
+      ];
     }
-
-    // Word + number combinations
-    words.slice(0, 20).forEach((word) => {
-      for (let i = 1; i <= 20; i++) {
-        filenames.push(`${word}${i}.yml`);
-        filenames.push(`${word}-${i}.yml`);
-        filenames.push(`${i}-${word}.yml`);
-      }
-    });
-
-    // Letter + word combinations
-    for (let i = 97; i <= 122; i++) {
-      const letter = String.fromCharCode(i);
-      words.slice(0, 10).forEach((word) => {
-        filenames.push(`${letter}-${word}.yml`);
-        filenames.push(`${word}-${letter}.yml`);
-      });
-    }
-
-    return [...new Set(filenames)]; // Remove duplicates
   }
 
   // Auto-update registry when new files are discovered
