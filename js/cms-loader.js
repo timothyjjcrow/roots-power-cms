@@ -149,22 +149,93 @@ class CMSLoader {
         "that.yml"
       );
     } else if (directoryPath.includes("services")) {
-      // Service patterns
-      const serviceWords = [
+      // Service patterns - comprehensive discovery like projects
+      const words = [
         "new",
+        "latest",
+        "recent",
+        "big",
+        "main",
+        "demo",
+        "work",
+        "job",
+        "test",
+        "task",
+        "site",
+        "shop",
+        "sample",
+        "office",
+        "commercial",
+        "service",
+        "residential",
+        "home",
+        "small",
+        "build",
         "emergency",
         "maintenance",
         "repair",
         "installation",
-        "service",
         "electrical",
         "power",
         "lighting",
+        "wiring",
+        "panel",
+        "upgrade",
+        "install",
+        "smart",
+        "solar",
+        "generator",
+        "industrial",
+        "underground",
+        "first",
+        "second",
+        "third",
+        "fourth",
+        "fifth",
+        "final",
+        "temp",
+        "draft",
       ];
-      serviceWords.forEach((word) => {
+
+      // Single words
+      words.forEach((word) => {
         discoveryPatterns.push(`${word}.yml`);
-        discoveryPatterns.push(`${word}-service.yml`);
       });
+
+      // Word combinations
+      words.slice(0, 15).forEach((word1) => {
+        words.slice(0, 15).forEach((word2) => {
+          if (word1 !== word2) {
+            discoveryPatterns.push(`${word1}-${word2}.yml`);
+            discoveryPatterns.push(`${word1}${word2}.yml`);
+          }
+        });
+      });
+
+      // Numbers and letters
+      for (let i = 1; i <= 20; i++) {
+        discoveryPatterns.push(`service${i}.yml`);
+        discoveryPatterns.push(`service-${i}.yml`);
+        discoveryPatterns.push(`${i}.yml`);
+      }
+
+      // Single letters
+      for (let c = 97; c <= 122; c++) {
+        // a-z
+        const letter = String.fromCharCode(c);
+        discoveryPatterns.push(`${letter}.yml`);
+        discoveryPatterns.push(`${letter}-service.yml`);
+        discoveryPatterns.push(`service-${letter}.yml`);
+      }
+
+      // Common patterns
+      discoveryPatterns.push(
+        "the.yml",
+        "my.yml",
+        "our.yml",
+        "this.yml",
+        "that.yml"
+      );
     }
 
     // Remove duplicates and filter out already known files
