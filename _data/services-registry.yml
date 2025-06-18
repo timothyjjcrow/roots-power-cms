@@ -1,4 +1,5 @@
 services:
+  - a-service.yml
   - commercial.yml
   - generator.yml
   - industrial.yml
@@ -6,5 +7,4 @@ services:
   - residential.yml
   - smart-home.yml
   - solar.yml
-  - test-service.yml
   - underground.yml

@@ -1,6 +1,5 @@
 projects:
-  - a-project.yml
   - coastal-commercial.yml
+  - new.yml
   - residential-upgrade.yml
   - solar-installation.yml
-  - the-proj.yml
