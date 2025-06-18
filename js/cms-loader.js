@@ -33,71 +33,56 @@ class CMSLoader {
     console.log(`🔍 Loading files from ${directoryPath}`);
 
     let filesToLoad = [];
-    const discoveredFiles = [];
 
-    // Step 1: Try to load registry first (primary source)
-    const registryFile = directoryPath.includes("projects")
-      ? "/_data/projects-registry.yml"
-      : "/_data/services-registry.yml";
-    const arrayKey = directoryPath.includes("projects")
-      ? "projects"
-      : "services";
+    // Step 1: Try to get actual directory contents from GitHub API
+    const actualFiles = await this.getActualDirectoryContents(directoryPath);
 
-    try {
-      const registryData = await this.loadYAML(registryFile, true);
-      if (registryData && Array.isArray(registryData[arrayKey])) {
-        filesToLoad = [...registryData[arrayKey]];
-        console.log(
-          `📋 Registry found ${filesToLoad.length} files: ${filesToLoad.join(
-            ", "
-          )}`
-        );
-      }
-    } catch (error) {
-      console.log(`📄 Registry not found, will use fallback discovery`);
-    }
-
-    // Step 2: ALWAYS check for new files (not just when registry is empty)
-    console.log(`🔍 Checking for new files not in registry...`);
-
-    const commonFilenames = this.getCommonFilenames(directoryPath);
-
-    for (const filename of commonFilenames) {
-      // Skip if already in registry
-      if (filesToLoad.includes(filename)) {
-        continue;
-      }
-
-      try {
-        const data = await this.loadYAML(`${directoryPath}${filename}`, true);
-        if (data && data.title) {
-          discoveredFiles.push(filename);
-          console.log(`🆕 Discovered NEW file: ${filename} - "${data.title}"`);
-        }
-      } catch (error) {
-        // Silently ignore - this is expected for discovery
-      }
-    }
-
-    if (discoveredFiles.length > 0) {
+    if (actualFiles.length > 0) {
+      filesToLoad = actualFiles;
       console.log(
-        `🎊 Found ${discoveredFiles.length} new files: ${discoveredFiles.join(
-          ", "
-        )}`
+        `📁 Found ${actualFiles.length} actual files: ${actualFiles.join(", ")}`
       );
-      filesToLoad.push(...discoveredFiles);
 
-      // Auto-update registry
-      await this.updateRegistryWithNewFiles(
+      // Update registry with actual files
+      const registryFile = directoryPath.includes("projects")
+        ? "/_data/projects-registry.yml"
+        : "/_data/services-registry.yml";
+      const arrayKey = directoryPath.includes("projects")
+        ? "projects"
+        : "services";
+
+      await this.updateRegistryWithAllFiles(
         registryFile,
-        discoveredFiles,
+        actualFiles,
         arrayKey
       );
     } else {
-      console.log(`✅ No new files found - registry is current`);
+      // Step 2: Fallback to registry if GitHub API fails
+      console.log(`📄 Could not get directory listing, using registry...`);
+
+      const registryFile = directoryPath.includes("projects")
+        ? "/_data/projects-registry.yml"
+        : "/_data/services-registry.yml";
+      const arrayKey = directoryPath.includes("projects")
+        ? "projects"
+        : "services";
+
+      try {
+        const registryData = await this.loadYAML(registryFile, true);
+        if (registryData && Array.isArray(registryData[arrayKey])) {
+          filesToLoad = [...registryData[arrayKey]];
+          console.log(
+            `📋 Registry found ${filesToLoad.length} files: ${filesToLoad.join(
+              ", "
+            )}`
+          );
+        }
+      } catch (error) {
+        console.log(`📄 Registry not found, using fallback files`);
+      }
     }
 
-    // Step 3: Fallback to known files if nothing found
+    // Step 3: Final fallback to known files if nothing found
     if (filesToLoad.length === 0) {
       if (directoryPath.includes("projects")) {
         filesToLoad = [
@@ -172,123 +157,71 @@ class CMSLoader {
     );
   }
 
-  // Get a small set of common filenames to try (no massive pattern generation)
-  getCommonFilenames(directoryPath) {
-    const common = [
-      // Single letters
-      "a.yml",
-      "b.yml",
-      "c.yml",
-      "d.yml",
-      "e.yml",
-      "f.yml",
-      "g.yml",
-      "h.yml",
-      "i.yml",
-      "j.yml",
-      // Numbers
-      "1.yml",
-      "2.yml",
-      "3.yml",
-      "4.yml",
-      "5.yml",
-      "6.yml",
-      "7.yml",
-      "8.yml",
-      "9.yml",
-      "10.yml",
-      // Common words
-      "new.yml",
-      "test.yml",
-      "demo.yml",
-      "main.yml",
-      "latest.yml",
-      "temp.yml",
-      "draft.yml",
-      "work.yml",
-      "project.yml",
-      "service.yml",
-      "sample.yml",
-      "client.yml",
-      "custom.yml",
-      // Common patterns
-      "my.yml",
-      "the.yml",
-      "our.yml",
-      "this.yml",
-      "that.yml",
-    ];
-
-    if (directoryPath.includes("projects")) {
-      return [
-        ...common,
-        "a-project.yml",
-        "new-project.yml",
-        "test-project.yml",
-        "my-project.yml",
-        "project-1.yml",
-        "project-2.yml",
-        "project-3.yml",
-        "project-a.yml",
-        "project-b.yml",
-        "client-project.yml",
-        "the-project.yml",
-        "latest-project.yml",
-        "main-project.yml",
-      ];
-    } else {
-      return [
-        ...common,
-        "a-service.yml",
-        "new-service.yml",
-        "test-service.yml",
-        "my-service.yml",
-        "service-1.yml",
-        "service-2.yml",
-        "service-3.yml",
-        "service-a.yml",
-        "service-b.yml",
-        "emergency.yml",
-        "maintenance.yml",
-        "repair.yml",
-        "installation.yml",
-        "electrical.yml",
-        "the-service.yml",
-        "latest-service.yml",
-        "main-service.yml",
-      ];
-    }
-  }
-
-  // Auto-update registry when new files are discovered
-  async updateRegistryWithNewFiles(registryFile, newFiles, arrayKey) {
+  // Get actual directory contents using GitHub API
+  async getActualDirectoryContents(directoryPath) {
     try {
+      // Extract repo info from current URL
+      const currentUrl = window.location.href;
+      let repoPath = "";
+
+      // Try to determine GitHub repo from URL or use a known repo
+      if (currentUrl.includes("netlify.app")) {
+        // For Netlify deployments, we need to use the GitHub API
+        // Assuming the repo is timothyjjcrow/roots-power-cms based on the git remote
+        repoPath = "timothyjjcrow/roots-power-cms";
+      } else {
+        console.log(
+          `📁 Not a supported deployment platform for directory listing`
+        );
+        return [];
+      }
+
+      // Convert directory path to GitHub API path
+      const apiPath = directoryPath.replace(/^\//, "").replace(/\/$/, "");
+      const apiUrl = `https://api.github.com/repos/${repoPath}/contents/${apiPath}`;
+
+      console.log(`📁 Fetching directory contents from: ${apiUrl}`);
+
+      const response = await fetch(apiUrl);
+      if (!response.ok) {
+        console.log(`📁 GitHub API request failed: ${response.status}`);
+        return [];
+      }
+
+      const contents = await response.json();
+      if (!Array.isArray(contents)) {
+        console.log(`📁 Unexpected API response format`);
+        return [];
+      }
+
+      // Filter for .yml files
+      const ymlFiles = contents
+        .filter((item) => item.type === "file" && item.name.endsWith(".yml"))
+        .map((item) => item.name);
+
       console.log(
-        `🔄 Auto-updating registry ${registryFile} with new files: ${newFiles.join(
+        `📁 GitHub API found ${ymlFiles.length} .yml files: ${ymlFiles.join(
           ", "
         )}`
       );
+      return ymlFiles;
+    } catch (error) {
+      console.log(`📁 Error fetching directory contents: ${error.message}`);
+      return [];
+    }
+  }
 
-      // Read current registry
-      let currentFiles = [];
-      try {
-        const registryData = await this.loadYAML(registryFile, true);
-        if (registryData && Array.isArray(registryData[arrayKey])) {
-          currentFiles = registryData[arrayKey];
-        }
-      } catch (error) {
-        console.log(`📄 Creating new registry as current one not found`);
-      }
-
-      // Add new files to registry
-      const updatedFiles = [...currentFiles, ...newFiles];
+  // Update registry with complete file list
+  async updateRegistryWithAllFiles(registryFile, allFiles, arrayKey) {
+    try {
+      console.log(
+        `🔄 Updating registry ${registryFile} with complete file list`
+      );
 
       // Note: In a browser environment, we can't write files directly
       // This would need to be handled by a server endpoint or build process
-      console.log(
-        `💡 Registry should be updated to include: ${updatedFiles.join(", ")}`
-      );
-      console.log(`💡 Run 'node update-registry.js' to sync the registry file`);
+      console.log(`💡 Registry should contain: ${allFiles.join(", ")}`);
+      console.log(`💡 GitHub Action will sync registry automatically`);
     } catch (error) {
       console.error(`❌ Error updating registry:`, error);
     }

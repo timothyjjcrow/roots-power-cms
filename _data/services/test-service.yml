@@ -1,0 +1,7 @@
+title: "Test Service"
+description: "This is a test service to verify automatic discovery"
+icon: "🔧"
+features:
+  - "Automatic discovery testing"
+  - "Registry synchronization"
+  - "GitHub API integration"
